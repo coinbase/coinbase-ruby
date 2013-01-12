@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'coinbase-ruby/version'
+require 'coinbase/version'
 
 Gem::Specification.new do |gem|
-  gem.name          = "coinbase-ruby"
-  gem.version       = Coinbase::Ruby::VERSION
+  gem.name          = "coinbase"
+  gem.version       = Coinbase::VERSION
   gem.authors       = ["Brian Armstrong"]
   gem.email         = [""]
   gem.description   = ["Wrapper for the Coinbase Oauth2 API"]
