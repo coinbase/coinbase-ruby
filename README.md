@@ -27,7 +27,7 @@ Start by [enabling the API Key on your account](http://localhost:3000/account/in
 Next you can create an instance of the client and pass it your API Key as the only parameter.
 
 ```ruby
-COINBASE = Coinbase.new ENV['COINBASE_API_KEY']
+c = Coinbase::Client.new ENV['COINBASE_API_KEY']
 ```
 
 Notice here that we did not hard code the API key into our codebase, but used an environment variable instead.  Keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/overview#security).
@@ -35,14 +35,18 @@ Notice here that we did not hard code the API key into our codebase, but used an
 Now you can call methods on `COINBASE` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
 ```ruby
-puts JSON.parse(COINBASE.account_balance)
-=> {"amount"=>"50.00000000", "currency"=>"BTC"}
+JSON.parse(c.balance)
+=> {"amount"=>"200.35371044", "currency"=>"BTC"}
+JSON.parse(c.send_money transaction: {to: 'user2@example.com', amount: 0.10, notes: "sample transaction!"})
+=> {"success"=>true, "transaction"=>{"id"=>"50f0d91ec3bfcf323600000d", "created_at"=>"2013-01-11T19:31:42-08:00", "notes"=>"sample transaction!", "amount"=>{"amount"=>"-0.10000000", "currency"=>"BTC"}, "request"=>false, "status"=>"complete", "sender"=>{"id"=>"4efec8d7bedd320001000003", "email"=>"user1@example.com", "name"=>"User One"}, "recipient"=>{"id"=>"50cfc10fcc75c4d8cd000010", "email"=>"user2@example.com", "name"=>"User Two"}, "recipient_address"=>"barmstrong@gmail.com"}}
 ```
 
-If there are any methods listed in the [api reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` (which corresponds to the HTTP verbs).  These methods take a `path` as the first argument and an optional `params` hash.  For example:
+You can see a [complete list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase-ruby/version.rb).
+
+If there are any methods listed in the [api reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash.  For example:
 
 ```ruby
-COINBASE.get('/account/balance')
+c.get('/account/balance')
 => {"amount"=>"50.00000000", "currency"=>"BTC"}
 ```
 
