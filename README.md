@@ -27,7 +27,7 @@ Start by [enabling the API Key on your account](http://localhost:3000/account/in
 Next you can create an instance of the client and pass it your API Key as the only parameter.
 
 ```ruby
-COINBASE = Coinbase.new(ENV['COINBASE_API_KEY'])
+COINBASE = Coinbase.new ENV['COINBASE_API_KEY']
 ```
 
 Notice here that we did not hard code the API key into our codebase, but used an environment variable instead.  Keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/overview#security).
@@ -35,7 +35,14 @@ Notice here that we did not hard code the API key into our codebase, but used an
 Now you can call methods on `COINBASE` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
 ```ruby
-puts JSON.parse(COINBASE.balance)
+puts JSON.parse(COINBASE.account_balance)
+=> {"amount"=>"50.00000000", "currency"=>"BTC"}
+```
+
+If there are any methods listed in the [api reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` (which corresponds to the HTTP verbs).  These methods take a `path` as the first argument and an optional `params` hash.  For example:
+
+```ruby
+COINBASE.get('/account/balance')
 => {"amount"=>"50.00000000", "currency"=>"BTC"}
 ```
 
