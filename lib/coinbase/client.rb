@@ -5,7 +5,6 @@ module Coinbase
   class Client
     include HTTParty
     base_uri 'https://coinbase.com/api/v1'
-    default_timeout 2
     format :json
 
     def initialize(api_key)

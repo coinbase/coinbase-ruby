@@ -2,9 +2,7 @@
 
 This gem helps you integrate with the [Coinbase API](https://coinbase.com/docs/api/overview) to add bitcoin payments or data to your application.
 
-This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview).
-
-If you would like to do an OAuth2 integration instead, you may want to try the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2).
+This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview).  If you would like to do an OAuth2 integration instead, you may want to try the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2).
 
 ## Installation
 
@@ -22,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Start by [enabling an API Key on your account](http://localhost:3000/account/integrations).
+Start by [enabling an API Key on your account](https://coinbase.com/account/integrations).
 
 Next you can create an instance of the client and pass it your API Key as the only parameter.
 
@@ -40,7 +38,7 @@ require 'json'
 JSON.parse(c.balance)
 => {"amount"=>"200.35371044", "currency"=>"BTC"}
 JSON.parse(c.send_money transaction: {to: 'user2@example.com', amount: 0.10, notes: "sample transaction!"})
-=> {"success"=>true, "transaction"=>{"id"=>"50f0d91ec3bfcf323600000d", "created_at"=>"2013-01-11T19:31:42-08:00", "notes"=>"sample transaction!", "amount"=>{"amount"=>"-0.10000000", "currency"=>"BTC"}, "request"=>false, "status"=>"complete", "sender"=>{"id"=>"4efec8d7bedd320001000003", "email"=>"user1@example.com", "name"=>"User One"}, "recipient"=>{"id"=>"50cfc10fcc75c4d8cd000010", "email"=>"user2@example.com", "name"=>"User Two"}, "recipient_address"=>"barmstrong@gmail.com"}}
+=> {"success"=>true, "transaction"=>{"id"=>"50f0d91ec3bfcf323600000d", "created_at"=>"2013-01-11T19:31:42-08:00", "notes"=>"sample transaction!", "amount"=>{"amount"=>"-0.10000000", "currency"=>"BTC"}, "request"=>false, "status"=>"complete", "sender"=>{"id"=>"4efec8d7bedd320001000003", "email"=>"user1@example.com", "name"=>"User One"}, "recipient"=>{"id"=>"50cfc10fcc75c4d8cd000010", "email"=>"user2@example.com", "name"=>"User Two"}, "recipient_address"=>"user2@example.com"}}
 ```
 
 You can see a [list of method names here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb).
