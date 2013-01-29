@@ -182,9 +182,9 @@ coinbase.buy_price(30).format
 
 ### Create a payment button
 
-This will create the code for an embeddable payment button (and modal window) to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
+This will create the code for a payment button (and modal window) that you can use to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
 
-The arguments are (in order): item name, price, descripion, custom param (which comes through in the [callback](https://coinbase.com/docs/merchant_tools/callbacks) to your site).  You can pass an options hash as a final argument with any other [parameters described in the documentation](https://coinbase.com/api/doc/buttons/create.html).
+The arguments are (in order): item name, price, description, custom param (which comes through in the [callback](https://coinbase.com/docs/merchant_tools/callbacks) to your site).  You can pass an options hash as a final argument with any other [parameters described in the documentation](https://coinbase.com/api/doc/buttons/create.html).
 
 ```ruby
 r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
