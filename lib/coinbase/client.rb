@@ -2,6 +2,7 @@ require 'httparty'
 require 'multi_json'
 require 'hashie'
 require 'money'
+require 'time'
 
 module Coinbase
   class Client
@@ -124,14 +125,18 @@ module Coinbase
 
     def buy! qty
       r = post '/buys', {qty: qty}
-      convert_money_objects(r)
+      r = convert_money_objects(r)
+      r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
+      r
     end
 
     # Sells
 
     def sell! qty
       r = post '/sells', {qty: qty}
-      convert_money_objects(r)
+      r = convert_money_objects(r)
+      r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
+      r
     end
 
     # Wrappers for the main HTTP verbs

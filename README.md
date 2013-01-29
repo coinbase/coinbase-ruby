@@ -2,7 +2,7 @@
 
 An easy way to buy, use, and accept bitcoin through the [Coinbase API](https://coinbase.com/docs/api/overview)!
 
-This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview) which is a good choice if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
+This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview) which is ideal if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
 
 ## Installation
 
@@ -41,7 +41,7 @@ coinbase.balance.to_f
 => 200.353
 ```
 
-[Money objects](https://github.com/RubyMoney/money) are returned for most amounts dealing with currency.  You can call `to_f`, `format`, or perform math operations on these objects.  You can see a list of [supported currencies here](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).
+[Money objects](https://github.com/RubyMoney/money) are returned for most amounts dealing with currency.  You can call `to_f`, `format`, or perform math operations on money objects.
 
 ## Examples
 
@@ -68,7 +68,7 @@ r.to_hash
 => ... # raw hash response
 ```
 
-You can also send money in other [currencies](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).  It will be automatically converted to the correct BTC amount using the current exchange rate.
+You can also send money in [a number of currencies](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).  The amount will be automatically converted to the correct BTC amount using the current exchange rate.
 
 ```ruby
 r = coinbase.send_money 'user@example.com', 1.23.to_money('AUS')
@@ -88,7 +88,7 @@ r.transaction.notes
 
 ### Request bitcoin
 
-This will send an email to the recipient, requesting payment.
+This will send an email to the recipient, requesting payment, and give them an easy way to pay.
 
 ```ruby
 r = coinbase.request_money 'client@example.com', 50, "contractor hours in January (website redesign for 50 BTC)"
@@ -130,29 +130,29 @@ Transactions will always have an `id` attribute which is the primary way to iden
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web app first.
 
-On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete, although we're working on shortening this window.
+On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window.
 
 On a sell we'll credit your bank account in a similar way and it will arrive within two business days.
 
 ```ruby
-r = coinbase.buy! 1
+r = coinbase.buy!(1)
 r.transfer.code
 => '6H7GYLXZ'
 t.total.format
 => "$17.95"
 r.transfer.payout_date
-=> "2013-02-01T18:00:00-08:00"
+=> 2013-02-01 18:00:00 -0800
 ```
 
 
 ```ruby
-r = coinbase.sell! 1
+r = coinbase.sell!(1)
 r.transfer.code
 => 'RD2OC8AL'
 t.total.format
 => "$17.93"
 r.transfer.payout_date
-=> "2013-02-01T18:00:00-08:00"
+=> 2013-02-01 18:00:00 -0800
 ```
 
 ### Check bitcoin prices

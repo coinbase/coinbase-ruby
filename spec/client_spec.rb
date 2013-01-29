@@ -113,7 +113,7 @@ describe Coinbase::Client do
   # Buys
 
   it "should let you buy bitcoin" do
-    response = {"success"=>true, "transfer"=>{"_type"=>"AchDebit", "code"=>"6H7GYLXZ", "created_at"=>"2013-01-28T16:08:58-08:00", "fees"=>{"coinbase"=>{"cents"=>14, "currency_iso"=>"USD"}, "bank"=>{"cents"=>15, "currency_iso"=>"USD"}}, "status"=>"created", "btc"=>{"amount"=>"1.00000000", "currency"=>"BTC"}, "subtotal"=>{"amount"=>"13.55", "currency"=>"USD"}, "total"=>{"amount"=>"13.84", "currency"=>"USD"}}}
+    response = {"success"=>true, "transfer"=>{"_type"=>"AchDebit", "code"=>"6H7GYLXZ", "created_at"=>"2013-01-28T16:08:58-08:00", "fees"=>{"coinbase"=>{"cents"=>14, "currency_iso"=>"USD"}, "bank"=>{"cents"=>15, "currency_iso"=>"USD"}}, "status"=>"created", "payout_date"=>"2013-02-01T18:00:00-08:00", "btc"=>{"amount"=>"1.00000000", "currency"=>"BTC"}, "subtotal"=>{"amount"=>"13.55", "currency"=>"USD"}, "total"=>{"amount"=>"13.84", "currency"=>"USD"}}}
     fake :post, "/buys", response
     r = @c.buy! 1
     r.success?.should == true
@@ -125,7 +125,7 @@ describe Coinbase::Client do
   # Sells
 
   it "should let you sell bitcoin" do
-    response = {"success"=>true, "transfer"=>{"_type"=>"AchCredit", "code"=>"RD2OC8AL", "created_at"=>"2013-01-28T16:32:35-08:00", "fees"=>{"coinbase"=>{"cents"=>14, "currency_iso"=>"USD"}, "bank"=>{"cents"=>15, "currency_iso"=>"USD"}}, "status"=>"created", "btc"=>{"amount"=>"1.00000000", "currency"=>"BTC"}, "subtotal"=>{"amount"=>"13.50", "currency"=>"USD"}, "total"=>{"amount"=>"13.21", "currency"=>"USD"}}}
+    response = {"success"=>true, "transfer"=>{"_type"=>"AchCredit", "code"=>"RD2OC8AL", "created_at"=>"2013-01-28T16:32:35-08:00", "fees"=>{"coinbase"=>{"cents"=>14, "currency_iso"=>"USD"}, "bank"=>{"cents"=>15, "currency_iso"=>"USD"}}, "status"=>"created", "payout_date"=>"2013-02-01T18:00:00-08:00", "btc"=>{"amount"=>"1.00000000", "currency"=>"BTC"}, "subtotal"=>{"amount"=>"13.50", "currency"=>"USD"}, "total"=>{"amount"=>"13.21", "currency"=>"USD"}}}
     fake :post, "/sells", response
     r = @c.sell! 1
     r.success?.should == true
