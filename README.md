@@ -130,6 +130,8 @@ Transactions will always have an `id` attribute which is the primary way to iden
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web app first.
 
+Then you can call `buy` or `sell` and pass a `quantity` of bitcoin you want to buy (as a float or integer).
+
 On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window.
 
 On a sell we'll credit your bank account in a similar way and it will arrive within two business days.
@@ -138,6 +140,8 @@ On a sell we'll credit your bank account in a similar way and it will arrive wit
 r = coinbase.buy!(1)
 r.transfer.code
 => '6H7GYLXZ'
+t.btc.format
+=> "1.00000000 BTC"
 t.total.format
 => "$17.95"
 r.transfer.payout_date
@@ -149,6 +153,8 @@ r.transfer.payout_date
 r = coinbase.sell!(1)
 r.transfer.code
 => 'RD2OC8AL'
+t.btc.format
+=> "1.00000000 BTC"
 t.total.format
 => "$17.93"
 r.transfer.payout_date
@@ -176,9 +182,9 @@ coinbase.buy_price(30).format
 
 ### Create a payment button
 
-This will create the code for an embeddable payment button (and modal window) on your site to accept bitcoin.  You can read [more about payment buttons here and see a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
+This will create the code for an embeddable payment button (and modal window) to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
 
-The arguments are (in order): item name, price, descripion, custom param (which comes through in the [callback](https://coinbase.com/docs/merchant_tools/callbacks) to your site).
+The arguments are (in order): item name, price, descripion, custom param (which comes through in the [callback](https://coinbase.com/docs/merchant_tools/callbacks) to your site).  You can pass an options hash as a final argument with any other [parameters described in the documentation](https://coinbase.com/api/doc/buttons/create.html).
 
 ```ruby
 r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
