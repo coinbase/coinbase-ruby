@@ -159,8 +159,13 @@ module Coinbase
 
     def http_verb(verb, path, options={})
       r = self.class.send(verb, path, {body: merge_options(options)})
-      Hashie::Mash.new(JSON.parse(r.body))
+      hash = Hashie::Mash.new(JSON.parse(r.body))
+      raise Error.new(hash.error) if hash.error
+      raise Error.new(hash.errors.join(", ")) if hash.errors
+      hash
     end
+
+    class Error < StandardError; end
 
     private
 

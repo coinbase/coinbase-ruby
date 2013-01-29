@@ -8,6 +8,15 @@ describe Coinbase::Client do
     @c = Coinbase::Client.new 'api key', {base_uri: BASE_URI}
   end
 
+  # Auth and Errors
+
+  it "raise errors" do
+    fake :get, '/account/balance', {error: "some error"}
+    expect{ @c.balance }.to raise_error(Coinbase::Client::Error, 'some error')
+    fake :get, '/account/balance', {errors: ["some", "error"]}
+    expect{ @c.balance }.to raise_error(Coinbase::Client::Error, 'some, error')
+  end
+
   # Account
 
   it "should get balance" do
