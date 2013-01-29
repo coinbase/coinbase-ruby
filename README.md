@@ -1,6 +1,6 @@
 # Coinbase
 
-This gem helps you integrate with the [Coinbase API](https://coinbase.com/docs/api/overview) to add bitcoin payments to your application.
+An easy way to use the [Coinbase API](https://coinbase.com/docs/api/overview) and integrate bitcoin payments into your application.
 
 This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview).  If you would like to do an OAuth2 integration instead, you may want to start with the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) and use this gem as a reference.
 
