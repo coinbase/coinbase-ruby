@@ -1,2 +1,5 @@
+require "json"
+require "money"
 require "coinbase/version"
+require "coinbase/money"
 require "coinbase/client"
