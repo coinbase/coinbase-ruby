@@ -1,8 +1,8 @@
 # Coinbase
 
-An easy way to buy, use, and accept bitcoin through the [Coinbase API](https://coinbase.com/docs/api/overview).
+An easy way to buy, use, and accept bitcoin through the [Coinbase API](https://coinbase.com/docs/api/overview)!
 
-It uses the [api key authentication method](https://coinbase.com/docs/api/overview) which is a good choice if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
+This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview) which is a good choice if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
 
 ## Installation
 
