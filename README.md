@@ -140,9 +140,9 @@ On a sell we'll credit your bank account in a similar way and it will arrive wit
 r = coinbase.buy!(1)
 r.transfer.code
 => '6H7GYLXZ'
-t.btc.format
+r.transfer.btc.format
 => "1.00000000 BTC"
-t.total.format
+r.transfer.total.format
 => "$17.95"
 r.transfer.payout_date
 => 2013-02-01 18:00:00 -0800
@@ -153,9 +153,9 @@ r.transfer.payout_date
 r = coinbase.sell!(1)
 r.transfer.code
 => 'RD2OC8AL'
-t.btc.format
+r.transfer.btc.format
 => "1.00000000 BTC"
-t.total.format
+r.transfer.total.format
 => "$17.93"
 r.transfer.payout_date
 => 2013-02-01 18:00:00 -0800
