@@ -1,8 +1,8 @@
 # Coinbase
 
-An easy way to use the [Coinbase API](https://coinbase.com/docs/api/overview) and integrate bitcoin payments into your application.
+This gem provides an easy way to buy, use, and accept bitcoin with the [Coinbase API](https://coinbase.com/docs/api/overview).
 
-This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview).  If you would like to do an OAuth2 integration instead, you may want to start with the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) and use this gem as a reference.
+It uses the [api key authentication method](https://coinbase.com/docs/api/overview) which is a good choice if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
 
 ## Installation
 
@@ -10,7 +10,7 @@ Add this line to your application's Gemfile:
 
     gem 'coinbase'
 
-And then execute:
+Then execute:
 
     $ bundle
 
@@ -22,7 +22,7 @@ Or install it yourself as:
 
 Start by [enabling an API Key on your account](https://coinbase.com/account/integrations).
 
-Next you can create an instance of the client and pass it your API Key as the first (and only) parameter.
+Next, create an instance of the client and pass it your API Key as the first (and only) parameter.
 
 ```ruby
 coinbase = Coinbase::Client.new ENV['COINBASE_API_KEY']
@@ -41,9 +41,7 @@ coinbase.balance.to_f
 => 200.353
 ```
 
-Money amounts (USD, EUR, BTC, etc) are returned as [ruby money](https://github.com/RubyMoney/money) objects (integer amounts paired with a currency ISO code).  You can call `to_f`, `format`, or perform math operations on these objects.
-
-You can see a list of [supported currencies here](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).
+[Money objects](https://github.com/RubyMoney/money) are returned for most amounts dealing with currency.  You can call `to_f`, `format`, or perform math operations on these objects.  You can see a list of [supported currencies here](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).
 
 ## Examples
 
@@ -73,7 +71,7 @@ r.to_hash
 You can also send money in other [currencies](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).  It will be automatically converted to the correct BTC amount using the current exchange rate.
 
 ```ruby
-r = coinbase.send_money 'user@example.com', 1.23.to_money('USD')
+r = coinbase.send_money 'user@example.com', 1.23.to_money('AUS')
 r.transaction.amount.format
 => "0.06713955 BTC"
 ```
@@ -84,6 +82,8 @@ The first parameter can also be a bitcoin address and the third parameter can be
 r = coinbase.send_money 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x', 2.23.to_money("USD"), "thanks for the coffee!"
 r.transaction.recipient_address
 => "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
+r.transaction.notes
+=> "thanks for the coffee!"
 ```
 
 ### Request bitcoin
@@ -110,7 +110,7 @@ r.success?
 
 ### List your current transactions
 
-Sorted in descending order by timestamp, 30 per page.  You can pass a pass an integer as the first param to page through results (for example `coinbase.transactions(2)`).
+Sorted in descending order by timestamp, 30 per page.  You can pass an integer as the first param to page through results (for example `coinbase.transactions(2)`).
 
 ```ruby
 r = coinbase.transactions
@@ -124,22 +124,20 @@ r.transactions.collect{|t| t.transaction.amount.format }
 => ["-1.10000000 BTC", "42.73120000 BTC", ...]
 ```
 
+Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase api.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
+
 ### Buy or Sell bitcoin
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web app first.
 
-On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (the `payout_date`, this is how long it takes for the bank transfer to complete, although we're working on shortening this window).
+On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete, although we're working on shortening this window.
 
-On a sell we'll credit your bank account and it will arrive within two business days.
+On a sell we'll credit your bank account in a similar way and it will arrive within two business days.
 
 ```ruby
 r = coinbase.buy! 1
-r.success?
-=> true
 r.transfer.code
 => '6H7GYLXZ'
-r.transfer.status
-=> 'created'
 t.total.format
 => "$17.95"
 r.transfer.payout_date
@@ -149,8 +147,6 @@ r.transfer.payout_date
 
 ```ruby
 r = coinbase.sell! 1
-r.success?
-=> true
 r.transfer.code
 => 'RD2OC8AL'
 t.total.format
@@ -185,7 +181,7 @@ This will create the code for an embeddable payment button (and modal window) on
 The arguments are (in order): item name, price, descripion, custom param (which comes through in the [callback](https://coinbase.com/docs/merchant_tools/callbacks) to your site).
 
 ```ruby
-r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "1234"
+r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
 r.code
 => "93865b9cae83706ae59220c013bc0afd"
 r.embed_html
@@ -195,7 +191,7 @@ r.embed_html
 ### Create a new user
 
 ```ruby
-r = coinbase.create_user "newuser@example.com"
+r = coinbase.create_user "newuser@example.com", "some password"
 r.user.email
 => "newuser@example.com"
 r.receive_address
@@ -204,12 +200,12 @@ r.receive_address
 
 ## Adding new methods
 
-You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [basic JSON api](https://coinbase.com/api/doc).
+You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
 
-If there are any methods listed in the [api reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash to get back a basic JSON response.  For example:
+If there are any methods listed in the [api reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
 
 ```ruby
-coinbase.get('/account/balance')
+coinbase.get('/account/balance').to_hash
 => {"amount"=>"50.00000000", "currency"=>"BTC"}
 ```
 
@@ -219,7 +215,7 @@ Or feel free to add a new wrapper method and submit a pull request.
 
 If someone gains access to your API Key they will have complete control of your Coinbase account.  This includes the abillity to send all of your bitcoins elsewhere.
 
-For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you don't already have a solution in place.
+For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you have never done this before.
 
 ## Testing
 
