@@ -7,6 +7,7 @@ require 'time'
 module Coinbase
   class Client
     include HTTParty
+    ssl_ca_file File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
 
     def initialize(api_key, options={})
       @api_key = api_key
