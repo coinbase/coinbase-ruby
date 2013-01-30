@@ -184,7 +184,7 @@ r.transfer.payout_date
 
 This will create the code for a payment button (and modal window) that you can use to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
 
-The arguments are (in order): item name, price, description, custom param (which comes through in the [callback](https://coinbase.com/docs/merchant_tools/callbacks) to your site).  You can pass an options hash as a final argument with any other [parameters described in the documentation](https://coinbase.com/api/doc/buttons/create.html).
+The method signature is `def create_button name, price, description=nil, custom=nil, options={}`.  The `custom` param will get passed through in [callbacks](https://coinbase.com/docs/merchant_tools/callbacks) to your site.  The list of valid `options` [are described here](https://coinbase.com/api/doc/buttons/create.html).
 
 ```ruby
 r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
@@ -204,11 +204,13 @@ r.receive_address
 => "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
 ```
 
+A receive address is returned also in case you need to send the new user a payment right away.
+
 ## Adding new methods
 
 You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
 
-If there are any methods listed in the [api reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
+If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
 
 ```ruby
 coinbase.get('/account/balance').to_hash
