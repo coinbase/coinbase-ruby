@@ -126,6 +126,25 @@ r.transactions.collect{|t| t.transaction.amount.format }
 
 Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase api.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
 
+### Check bitcoin prices
+
+Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell.  This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
+
+```ruby
+coinbase.buy_price(1).format
+=> "$17.95"
+coinbase.buy_price(30).format
+=> "$539.70"
+```
+
+
+```ruby
+coinbase.sell_price(1).format
+=> "$17.93"
+coinbase.buy_price(30).format
+=> "$534.60"
+```
+
 ### Buy or Sell bitcoin
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web app first.
@@ -159,25 +178,6 @@ r.transfer.total.format
 => "$17.93"
 r.transfer.payout_date
 => 2013-02-01 18:00:00 -0800
-```
-
-### Check bitcoin prices
-
-Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell.  This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
-
-```ruby
-coinbase.buy_price(1).format
-=> "$17.95"
-coinbase.buy_price(30).format
-=> "$539.70"
-```
-
-
-```ruby
-coinbase.sell_price(1).format
-=> "$17.93"
-coinbase.buy_price(30).format
-=> "$534.60"
 ```
 
 ### Create a payment button
