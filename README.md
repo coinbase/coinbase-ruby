@@ -149,7 +149,7 @@ coinbase.buy_price(30).format
 
 Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web app first.
 
-Then you can call `buy` or `sell` and pass a `quantity` of bitcoin you want to buy (as a float or integer).
+Then you can call `buy!` or `sell!` and pass a `quantity` of bitcoin you want to buy (as a float or integer).
 
 On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window.
 
