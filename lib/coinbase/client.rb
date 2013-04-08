@@ -56,6 +56,7 @@ module Coinbase
 
     def transactions page=1
       r = get '/transactions', {page: page}
+      r.transactions ||= []
       r.transactions.each do |t|
         if amt = t.transaction.amount
           t.transaction.amount = amt.amount.to_money(amt.currency)

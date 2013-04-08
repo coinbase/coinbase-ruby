@@ -46,7 +46,7 @@ describe Coinbase::Client do
     r = @c.create_button "Order 123", 1.23, "Sample description"
     r.success?.should == true
     r.button.name.should == "Order 123"
-  end  
+  end
 
   # Transactions
 
@@ -56,6 +56,13 @@ describe Coinbase::Client do
     r = @c.transactions
     r.transactions.first.transaction.id.should == '5018f833f8182b129c00002f'
     r.transactions.last.transaction.hsh.should == '9d6a7d1112c3db9de5315b421a5153d71413f5f752aff75bf504b77df4e646a3'
+  end
+
+  it "should not fail if there are no transactions" do
+    response = {"current_user"=>{"id"=>"5011f33df8182b142400000e", "email"=>"user2@example.com", "name"=>"user2@example.com"}, "balance"=>{"amount"=>"0.00000000", "currency"=>"BTC"}, "total_count"=>0, "num_pages"=>0, "current_page"=>1}
+    fake :get, '/transactions', response
+    r = @c.transactions
+    r.transactions.should_not be_nil
   end
 
   it "should send money" do
