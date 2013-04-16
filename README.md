@@ -110,7 +110,7 @@ r.success?
 
 ### List your current transactions
 
-Sorted in descending order by timestamp, 30 per page.  You can pass an integer as the first param to page through results (for example `coinbase.transactions(2)`).
+Sorted in descending order by timestamp, 30 per page.  You can pass an integer as the first param to page through results, for example `coinbase.transactions(2)`.
 
 ```ruby
 r = coinbase.transactions
@@ -223,7 +223,7 @@ Or feel free to add a new wrapper method and submit a pull request.
 
 If someone gains access to your API Key they will have complete control of your Coinbase account.  This includes the abillity to send all of your bitcoins elsewhere.
 
-For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you have never done this before.
+For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API key securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you have never done this before.
 
 ## Testing
 
