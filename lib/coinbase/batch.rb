@@ -1,5 +1,7 @@
+require 'thread'
+
 module Coinbase
-  class Batch
+  class Batch < BasicObject
     MAXIMUM_CONCURRENT_REQUESTS = 10
 
     def initialize(client, opts={}, &block)
@@ -23,8 +25,8 @@ module Coinbase
         end
 
         commands.each do |c|
-          threads << Thread.new {
-            Thread.current[:resp] = @client.send c[0], *c[1]
+          threads << ::Thread.new {
+            ::Thread.current[:resp] = @client.send c[0], *c[1]
           }
         end
 
