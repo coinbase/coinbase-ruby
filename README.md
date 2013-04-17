@@ -190,7 +190,7 @@ The method signature is `def create_button name, price, description=nil, custom=
 
 ```ruby
 r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
-r.code
+r.button.code
 => "93865b9cae83706ae59220c013bc0afd"
 r.embed_html
 => "<div class=\"coinbase-button\" data-code=\"93865b9cae83706ae59220c013bc0afd\"></div><script src=\"https://coinbase.com/assets/button.js\" type=\"text/javascript\"></script>"
