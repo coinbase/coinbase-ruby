@@ -221,6 +221,19 @@ coinbase.get('/account/balance').to_hash
 
 Or feel free to add a new wrapper method and submit a pull request.
 
+## Batching
+
+The client can be batched to run multiple requests concurrently. If you have to make a lot of API calls (for example, to get balances for a lot of users simultaneously), this will improve performance significantly. Under the hood, it uses internal threading to take advantage of Ruby's non-blocking IO model (one IO request per thread):
+
+```ruby
+buy_price, sell_price = coinbase.batch do |client|
+  client.buy_price 1
+  client.sell_price 1
+end
+
+buy_price.inspect # => #<Money fractional:1384 currency:USD>
+```
+
 ## Security Notes
 
 If someone gains access to your API Key they will have complete control of your Coinbase account.  This includes the abillity to send all of your bitcoins elsewhere.
