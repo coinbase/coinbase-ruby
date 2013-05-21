@@ -150,6 +150,31 @@ describe Coinbase::Client do
     r.transfer.btc.should == 1.to_money
   end
 
+  it "should batch multiple requests" do
+    buy_api_return = {"amount"=>"13.84", "currency"=>"USD"}
+    sell_api_return = {"amount"=>"15.00", "currency"=>"CAD"}
+    fake :get, "/prices/buy", buy_api_return
+    fake :get, "/prices/sell", sell_api_return
+
+    buy_price, sell_price = @c.batch do |c|
+      c.buy_price 1
+      c.sell_price 1
+    end
+
+    buy_price.to_f.should == 13.84
+    sell_price.to_f.should == 15.00
+
+    # Check to make sure the thread throttle doesn't cause an error
+
+    prices = @c.batch do |c|
+      (Coinbase::Batch::MAXIMUM_CONCURRENT_REQUESTS).times { c.buy_price(1); c.sell_price(1) }
+    end
+
+    prices.length.should == 20
+
+    prices.first.to_f.should == 13.84
+    prices.last.to_f.should == 15.00
+  end
 
   private
 

@@ -141,6 +141,12 @@ module Coinbase
       r
     end
 
+    # Batching
+
+    def batch(&block)
+      Batch.new(self, &block).run
+    end
+
     # Wrappers for the main HTTP verbs
 
     def get(path, options={})
