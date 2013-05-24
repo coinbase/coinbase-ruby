@@ -68,7 +68,7 @@ describe Coinbase::Client do
   it "should send money" do
     response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
     fake :post, '/transactions/send_money', response
-    r = @c.send_money "user1@example.com", 1.2345, {transaction: {notes: "Sample transaction for you"}}
+    r = @c.send_money "user1@example.com", 1.2345, "Sample transaction for you"
     r.success.should == true
     r.transaction.id.should == '501a1791f8182b2071000087'
   end
@@ -76,7 +76,7 @@ describe Coinbase::Client do
   it "should request money" do
     response = {"success"=>true, "transaction"=>{"id"=>"501a3554f8182b2754000003", "created_at"=>"2012-08-02T01:07:48-07:00", "notes"=>"Sample request for you!", "amount"=>{"amount"=>"1.23400000", "currency"=>"BTC"}, "request"=>true, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}}}
     fake :post, '/transactions/request_money', response
-    r = @c.request_money "user1@example.com", 1.2345, {transaction: {notes: "Sample transaction for you"}}
+    r = @c.request_money "user1@example.com", 1.2345, "Sample transaction for you"
     r.success.should == true
     r.transaction.id.should == '501a3554f8182b2754000003'
   end

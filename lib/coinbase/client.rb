@@ -65,12 +65,13 @@ module Coinbase
       r
     end
 
-    def send_money to, amount, options={}
+    def send_money to, amount, notes=nil, options={}
       options[:transaction]                         ||= {}
       options[:transaction][:to]                    ||= to
       amount = amount.to_money unless amount.is_a?(Money)
       options[:transaction][:amount_string]         ||= amount.to_f.to_s
       options[:transaction][:amount_currency_iso]   ||= amount.currency.iso_code
+      options[:transaction][:notes]                 ||= notes
       r = post '/transactions/send_money', options
       if amt = r.transaction.amount
         r.transaction.amount = amt.amount.to_money(amt.currency)
@@ -78,12 +79,13 @@ module Coinbase
       r
     end
 
-    def request_money from, amount, options={}
+    def request_money from, amount, notes=nil, options={}
       options[:transaction]                         ||= {}
-      options[:transaction][:from]                    ||= from
+      options[:transaction][:from]                  ||= from
       amount = amount.to_money unless amount.is_a?(Money)
       options[:transaction][:amount_string]         ||= amount.to_f.to_s
       options[:transaction][:amount_currency_iso]   ||= amount.currency.iso_code
+      options[:transaction][:notes]                 ||= notes
       r = post '/transactions/request_money', options
       if amt = r.transaction.amount
         r.transaction.amount = amt.amount.to_money(amt.currency)
