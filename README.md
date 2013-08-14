@@ -2,7 +2,7 @@
 
 An easy way to buy, send, and accept [bitcoin](http://en.wikipedia.org/wiki/Bitcoin) through the [Coinbase API](https://coinbase.com/docs/api/overview).
 
-This gem uses the [api key authentication method](https://coinbase.com/docs/api/overview) which is an easy way to get started if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
+This gem uses the [api key authentication method](https://coinbase.com/docs/api/authentication) which is an easy way to get started if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
 
 ## Installation
 
@@ -28,7 +28,7 @@ Next, create an instance of the client and pass it your API Key as the first (an
 coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'])
 ```
 
-Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/overview#security).
+Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
 
 Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
@@ -147,13 +147,9 @@ coinbase.buy_price(30).format
 
 ### Buy or Sell bitcoin
 
-Buying and selling bitcoin requires you to [link and verify a bank account](https://coinbase.com/payment_methods) through the web app first.
+Buying and selling bitcoin requires you to [add a payment method](https://coinbase.com/buys) through the web app first.
 
 Then you can call `buy!` or `sell!` and pass a `quantity` of bitcoin you want to buy (as a float or integer).
-
-On a buy, we'll debit your bank account and the bitcoin will arrive in your Coinbase account four business days later (this is shown as the `payout_date` below).  This is how long it takes for the bank transfer to complete and verify, although we're working on shortening this window.
-
-On a sell we'll credit your bank account in a similar way and it will arrive within two business days.
 
 ```ruby
 r = coinbase.buy!(1)
