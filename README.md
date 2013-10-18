@@ -1,3 +1,15 @@
+**ALERT! October 18th, 2013** If you are getting SSL certificate validation errors very sorry for the trouble here.
+We needed to update our certificate which was about to expire, and unfortunately broke the certificate validation that was embedded in the gem.
+To resolve this you will need to update to version `1.2.4`:
+
+To update:
+
+    gem install coinbase
+    bundle update coinbase
+
+And ensure you are on version `1.2.4`. Apologies again for the trouble!
+
+
 # Coinbase
 
 An easy way to buy, send, and accept [bitcoin](http://en.wikipedia.org/wiki/Bitcoin) through the [Coinbase API](https://coinbase.com/docs/api/overview).
