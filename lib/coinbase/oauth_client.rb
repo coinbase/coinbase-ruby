@@ -1,4 +1,3 @@
-require 'client'
 require 'oauth2'
 
 module Coinbase
@@ -15,7 +14,7 @@ module Coinbase
       JSON.parse(@oauth_token.get(url).body)
     end
 
-    def balance options={} 
+    def balance options={}
       url = self.class.base_uri + '/account/balance'
       JSON.parse(@oauth_token.get(url).body)['amount'].to_money(h['currency'])
     end
