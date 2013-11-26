@@ -32,6 +32,8 @@ Or install it yourself as:
 
 ## Usage
 
+API Key mode:
+
 Start by [enabling an API Key on your account](https://coinbase.com/account/integrations).
 
 Next, create an instance of the client and pass it your API Key as the first (and only) parameter.
@@ -41,6 +43,21 @@ coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'])
 ```
 
 Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
+
+
+OAuth2 mode:
+
+The following assumes you have already obtained an oauth2 token, using something like the [omniauth-coinbase gem](https://github.com/naps62/omniauth-coinbase).
+
+```ruby
+coinbase = Coinbase::Client.new(auth_token, {:is_oauth => true, :refresh_token => refresh_token})
+```
+
+Notice here that we passed `:is_oauth => true` as an option. We can also optionally supply `:refresh_token` as an option, which will allow you to call the `oauth_refresh!` method to obtain a new token. Be sure to save this new token and its refresh token somewhere so that you can reuse it in the future!
+
+If you call a method on the `coinbase` instance after a token is expired, it will raise a `OAuth2::Error`. You can try calling `oauth_refresh!` to obtain and return a new token, and then try your operation again.
+
+
 
 Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
