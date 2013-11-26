@@ -28,4 +28,5 @@ Gem::Specification.new do |gem|
   gem.add_dependency "multi_json", ">= 1.3.4"
   gem.add_dependency "money", ">= 4.0.1"
   gem.add_dependency "hashie", ">= 1.2.0"
+  gem.add_dependency "oauth2", ">= 0.9.2"
 end

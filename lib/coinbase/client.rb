@@ -3,6 +3,7 @@ require 'multi_json'
 require 'hashie'
 require 'money'
 require 'time'
+require 'oauth2'
 
 module Coinbase
   class Client
@@ -11,13 +12,23 @@ module Coinbase
 
     def initialize(api_key, options={})
       @api_key = api_key
+      @is_oauth = options.delete(:is_oauth)
 
-      # defaults
-      options[:base_uri] ||= 'https://coinbase.com/api/v1'
-      options[:format]   ||= :json
-      options.each do |k,v|
-        self.class.send k, v
+      if @is_oauth
+        client_id = options[:oauth_client_id] || ENV['COINBASE_CLIENT_ID']
+        client_secret = options[:oauth_client_secret] || ENV['COINBASE_CLIENT_SECRET']
+        @oauth_client = OAuth2::Client.new(client_id, client_secret)
+        @oauth_client.connection.url_prefix = options[:base_uri] || 'https://coinbase.com/api/v1'
+        @oauth_token = OAuth2::AccessToken.new(@oauth_client, @api_key, {:refresh_token => options[:refresh_token]})
+      else
+        # defaults
+        options[:base_uri] ||= 'https://coinbase.com/api/v1'
+        options[:format]   ||= :json
+        options.each do |k,v|
+          self.class.send k, v
+        end
       end
+
     end
 
     # Account
@@ -162,11 +173,23 @@ module Coinbase
     end
 
     def http_verb(verb, path, options={})
-      r = self.class.send(verb, path, {body: merge_options(options)})
-      hash = Hashie::Mash.new(JSON.parse(r.body))
+      if @is_oauth
+        path[0] = '' # make path relative
+        r = @oauth_token.request(verb, path, {body:options})
+        json = r.body
+      else
+        r = self.class.send(verb, path, {body: merge_options(options)})
+        json = r.body
+      end
+
+      hash = Hashie::Mash.new(JSON.parse(json))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
       hash
+    end
+
+    def oauth_refresh!
+      @oauth_token = @oauth_token.refresh!
     end
 
     class Error < StandardError; end
