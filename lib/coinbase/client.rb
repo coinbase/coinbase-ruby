@@ -3,6 +3,7 @@ require 'multi_json'
 require 'hashie'
 require 'money'
 require 'time'
+require 'securerandom'
 
 module Coinbase
   class Client
@@ -108,7 +109,7 @@ module Coinbase
     # Users
 
     def create_user email, password=nil
-      password ||= Array.new(12){rand(36).to_s(36)}.join
+      password ||= SecureRandom.urlsafe_base64(12)
       options = {user: {email: email, password: password}}
       post '/users', options
     end
