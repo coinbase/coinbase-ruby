@@ -49,8 +49,11 @@ OAuth2 mode:
 
 The following assumes you have already obtained an oauth2 token, using something like the [omniauth-coinbase gem](https://github.com/naps62/omniauth-coinbase).
 
+You need to supply your OAuth2 client_id and client_secret for it to work properly. You can either set the environment variables `COINBASE_CLIENT_ID` and `COINBASE_CLIENT_SECRET` or supply `:oauth_client_id` and `:oauth_client_secret` as options.
+
 ```ruby
-coinbase = Coinbase::Client.new(auth_token, {:is_oauth => true, :refresh_token => refresh_token})
+coinbase = Coinbase::Client.new(auth_token, 
+     {:is_oauth => true, :refresh_token => refresh_token, :oauth_client_id => 'YOUR_APP_CLIENT_ID', :oauth_client_secret => 'YOUR_APP_CLIENT_SECRET'})
 ```
 
 Notice here that we passed `:is_oauth => true` as an option. We can also optionally supply `:refresh_token` as an option, which will allow you to call the `oauth_refresh!` method to obtain a new token. Be sure to save this new token and its refresh token somewhere so that you can reuse it in the future!
@@ -78,6 +81,20 @@ coinbase.balance.to_f
 
 ```ruby
 coinbase.balance.to_f
+=> 200.353 # BTC amount
+```
+
+
+### Check your balance with oauth2 token handling
+
+```ruby
+begin
+ coinbase.balance.to_f
+rescue OAuth2::Error => e
+  new_token = coinbase.oauth_refresh!
+  # save new_token.token and new_token.refresh_token somewhere
+  coinbase.balance.to_f
+end
 => 200.353 # BTC amount
 ```
 
