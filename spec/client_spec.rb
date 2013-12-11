@@ -40,12 +40,30 @@ describe Coinbase::Client do
 
   # Buttons
 
-  it "should create a new button" do
-    response = {:success=>true, :button=>{:code=>"93865b9cae83706ae59220c013bc0afd", :type=>"buy_now", :style=>"custom_large", :text=>"Pay With Bitcoin", :name=>"Order 123", :description=>"Sample description", :custom=>"Order123", :price=>{:cents=>123, :currency_iso=>"BTC"}}}
-    fake :post, '/buttons', response
-    r = @c.create_button "Order 123", 1.23, "Sample description"
-    r.success?.should == true
-    r.button.name.should == "Order 123"
+  describe "#create_button" do
+
+    let(:response) { response = {:success=>true, :button=>{:code=>"93865b9cae83706ae59220c013bc0afd", :type=>"buy_now", :style=>"custom_large", :text=>"Pay With Bitcoin", :name=>"Order 123", :description=>"Sample description", :custom=>"Order123", :price=>{:cents=>123, :currency_iso=>"BTC"}}} }
+
+    it "should create a new button" do
+      fake :post, '/buttons', response
+      r = @c.create_button "Order 123", 1.23, "Sample description"
+      r.success?.should == true
+      r.button.name.should == "Order 123"
+      r.embed_html.should include("https://coinbase.com/assets/button.js")
+    end
+
+    it "should create a page button" do
+      fake :post, '/buttons', response
+      r = @c.create_button "Order 123", 1.23, "Sample description", nil, button_mode: "page"
+      r.embed_html.should include("https://coinbase.com/checkouts")
+    end
+
+    it "should create an iframe button" do
+      fake :post, '/buttons', response
+      r = @c.create_button "Order 123", 1.23, "Sample description", nil, button_mode: "iframe"
+      r.embed_html.should include("https://coinbase.com/inline_payments")
+    end
+
   end
 
   # Transactions
