@@ -46,6 +46,17 @@ describe Coinbase::Client do
     r = @c.create_button "Order 123", 1.23, "Sample description"
     r.success?.should == true
     r.button.name.should == "Order 123"
+    r.embed_html.should == %[<div class="coinbase-button" data-code="93865b9cae83706ae59220c013bc0afd"></div><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>]
+
+    r = @c.create_button "Order 123", 1.23, "Sample description", nil, button_mode: 'page'
+    r.success?.should == true
+    r.button.name.should == "Order 123"
+    r.embed_html.should == %[<a href="https://coinbase.com/checkouts/93865b9cae83706ae59220c013bc0afd" target="_blank"><img alt="Pay With Bitcoin" src="https://coinbase.com/assets/buttons/custom_large.png"></a>]
+
+    r = @c.create_button "Order 123", 1.23, "Sample description", nil, button_mode: 'iframe'
+    r.success?.should == true
+    r.button.name.should == "Order 123"
+    r.embed_html.should == %[<iframe src="https://coinbase.com/inline_payments/93865b9cae83706ae59220c013bc0afd" style="width:500px;height:160px;border:none;box-shadow:0 1px 3px rgba(0,0,0,0.25);overflow:hidden;" scrolling="no" allowtransparency="true" frameborder="0"></iframe>]
   end
 
   # Transactions

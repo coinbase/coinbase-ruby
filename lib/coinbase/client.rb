@@ -48,13 +48,14 @@ module Coinbase
       options[:button][:custom]               ||= custom
       r = post '/buttons', options
       if r.success?
-        if options[:button_mode] == 'page'
-          r.embed_html = "<a href=\"https://coinbase.com/checkouts/#{r.button.code}\" target=\"_blank\"><img alt=\"#{r.button.text}\" src=\"https://coinbase.com/assets/buttons/#{r.button.style}.png\"></a>"
-        elsif options[:button_mode] == 'iframe'
-          r.embed_html = "<iframe src=\"https://coinbase.com/inline_payments/#{r.button.code}\" style=\"width: 500px; height: 160px; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.25); overflow: hidden;\" scrolling=\"no\" allowtransparency=\"true\" frameborder=\"0\"></iframe>"
-        else
-          r.embed_html = "<div class=\"coinbase-button\" data-code=\"#{r.button.code}\"></div><script src=\"https://coinbase.com/assets/button.js\" type=\"text/javascript\"></script>"
-        end
+        r.embed_html = case options[:button_mode]
+                       when 'page'
+                         %[<a href="https://coinbase.com/checkouts/#{r.button.code}" target="_blank"><img alt="#{r.button.text}" src="https://coinbase.com/assets/buttons/#{r.button.style}.png"></a>]
+                       when 'iframe'
+                          %[<iframe src="https://coinbase.com/inline_payments/#{r.button.code}" style="width:500px;height:160px;border:none;box-shadow:0 1px 3px rgba(0,0,0,0.25);overflow:hidden;" scrolling="no" allowtransparency="true" frameborder="0"></iframe>]
+                       else
+                         %[<div class="coinbase-button" data-code="#{r.button.code}"></div><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>]
+                       end
       end
       r
     end
