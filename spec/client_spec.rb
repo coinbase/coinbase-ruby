@@ -59,6 +59,14 @@ describe Coinbase::Client do
     r.embed_html.should == %[<iframe src="https://coinbase.com/inline_payments/93865b9cae83706ae59220c013bc0afd" style="width:500px;height:160px;border:none;box-shadow:0 1px 3px rgba(0,0,0,0.25);overflow:hidden;" scrolling="no" allowtransparency="true" frameborder="0"></iframe>]
   end
 
+  it "should create order for the button" do
+    response = {"success"=>true, "order"=>{"id"=>"UAHXEK24", "created_at"=>"2013-12-13T01:15:56-08:00", "status"=>"new", "total_btc"=>{"cents"=>123, "currency_iso"=>"BTC"}, "total_native"=>{"cents"=>123, "currency_iso"=>"BTC"}, "custom"=>"Order123", "receive_address"=>"1EWxf61QGAkQDNUDq6XynH2PdFRyZUm111", "button"=>{"type"=>"buy_now", "name"=>"Order 123", "description"=>"Sample description", "id"=>"93865b9cae83706ae59220c013bc0afd"}, "transaction"=>nil}}
+    fake :post, '/buttons/93865b9cae83706ae59220c013bc0afd/create_order', response
+    r = @c.create_order_for_button "93865b9cae83706ae59220c013bc0afd"
+    r.order.button.id.should == "93865b9cae83706ae59220c013bc0afd"
+    r.order.status.should == "new"
+  end
+
   # Transactions
 
   it "should get transaction list" do
