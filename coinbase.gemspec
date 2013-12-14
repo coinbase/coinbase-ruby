@@ -6,7 +6,7 @@ require 'coinbase/version'
 Gem::Specification.new do |gem|
   gem.name          = "coinbase"
   gem.version       = Coinbase::VERSION
-  gem.authors       = ["Brian Armstrong"]
+  gem.authors       = ["Brian Armstrong","Jason Hazel"]
   gem.email         = [""]
   gem.description   = ["Wrapper for the Coinbase Oauth2 API"]
   gem.summary       = ["Wrapper for the Coinbase Oauth2 API"]
