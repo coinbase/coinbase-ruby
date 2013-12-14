@@ -60,6 +60,10 @@ module Coinbase
       r
     end
 
+    def create_order_for_button button_id
+      post "/buttons/#{button_id}/create_order"
+    end
+
     # Transactions
 
     def transactions page=1

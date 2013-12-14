@@ -202,6 +202,15 @@ r.embed_html
 => "<div class=\"coinbase-button\" data-code=\"93865b9cae83706ae59220c013bc0afd\"></div><script src=\"https://coinbase.com/assets/button.js\" type=\"text/javascript\"></script>"
 ```
 
+### Create an order for a button
+
+This will generate an order associated with a button. You can read [more about creating an order for a button here](https://coinbase.com/api/doc/1.0/buttons/create_order.html).
+
+```ruby
+r = coinbase.create_order_for_button "93865b9cae83706ae59220c013bc0afd".to_hash
+=> "{\"success\"=>true, \"order\"=>{\"id\"=>\"ASXTKPZM\", \"created_at\"=>\"2013-12-13T01:36:47-08:00\", \"status\"=>\"new\", \"total_btc\"=>{\"cents\"=>6859115, \"currency_iso\"=>\"BTC\"}, \"total_native\"=>{\"cents\"=>4295, \"currency_iso\"=>\"EUR\"}, \"custom\"=>\"my custom tracking code for this order\", \"receive_address\"=>\"mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x\", \"button\"=>{\"type\"=>\"buy_now\", \"name\"=>\"Your Order #1234\", \"description\"=>\"1 widget at 42.95\", \"id\"=>\"93865b9cae83706ae59220c013bc0afd\"}, \"transaction\"=>nil}}"
+```
+
 ### Create a new user
 
 ```ruby
