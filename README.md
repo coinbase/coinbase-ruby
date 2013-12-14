@@ -188,6 +188,24 @@ r.transfer.payout_date
 => 2013-02-01 18:00:00 -0800
 ```
 
+### Listing Buy/Sell History
+
+You can use `transfers` to view past buys and sells.
+
+```ruby
+r = coinbase.transfers
+r.current_page
+ => 1 
+r.total_count
+ => 7 
+r.transfers.collect{|t| t.transfer.type }
+=> ["Buy", "Buy", ...] 
+r.transfers.collect{|t| t.transfer.btc.amount }
+=> [0.01, 0.01, ...] 
+r.transfers.collect{|t| t.transfer.total.amount }
+=> [5.72, 8.35, ...] 
+```
+
 ### Create a payment button
 
 This will create the code for a payment button (and modal window) that you can use to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).

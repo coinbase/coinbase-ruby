@@ -151,6 +151,17 @@ module Coinbase
       r
     end
 
+    # Transfers
+
+    def transfers options={}
+      r = get '/transfers', options
+      r = convert_money_objects(r)
+      r.transfers.each do |t|
+        t.transfer.payout_date = Time.parse(t.transfer.payout_date) rescue nil
+      end
+      r
+    end
+
     # Wrappers for the main HTTP verbs
 
     def get(path, options={})
