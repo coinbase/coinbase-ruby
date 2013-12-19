@@ -64,6 +64,18 @@ coinbase.balance.to_f
 => 200.353 # BTC amount
 ```
 
+### Get transaction details
+
+This will fetch the details/status of a transaction that was made within Coinbase or outside of Coinbase
+
+```ruby
+r = coinbase.get_transaction '5011f33df8182b142400000e'
+r.status
+=> 'pending'
+r.recipient_address
+=> 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x'
+```
+
 ### Send bitcoin
 
 ```ruby
