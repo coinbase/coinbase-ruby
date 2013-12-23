@@ -24,8 +24,8 @@ module Coinbase
     # Account
 
     def balance options={}
-      h = get '/account/balance', options
-      h['amount'].to_money(h['currency'])
+      r = get '/account/balance', options
+      Money.new_with_amount(r['amount'].to_f, r['currency'])     
     end
 
     def receive_address options={}
@@ -129,12 +129,12 @@ module Coinbase
 
     def buy_price qty=1
       r = get '/prices/buy', {qty: qty}
-      r['amount'].to_money(r['currency'])
+      Money.new_with_amount(r['amount'].to_f, r['currency']) 
     end
 
     def sell_price qty=1
       r = get '/prices/sell', {qty: qty}
-      r['amount'].to_money(r['currency'])
+      Money.new_with_amount(r['amount'].to_f, r['currency']) 
     end
 
     # Buys
