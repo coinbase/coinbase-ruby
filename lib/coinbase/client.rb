@@ -166,6 +166,13 @@ module Coinbase
       r
     end
 
+    # Currencies
+
+    def exchange_rates
+      r = get '/currencies/exchange_rates'
+      r
+    end
+
     # Wrappers for the main HTTP verbs
 
     def get(path, options={})
