@@ -273,7 +273,5 @@ bundle exec rspec # or just 'rspec' may work
 
 1. Fork this repo and make changes in your own copy
 2. Add a test if applicable and run the existing tests with `rspec` to make sure they pass
-3. Bump the version number in `lib/coinbase/version.rb`
-4. Add your name to the contributors list (or we can add you)
-5. Commit your changes and push to your fork `git push origin master`
-6. Create a new pull request and submit it back to us!
+3. Commit your changes and push to your fork `git push origin master`
+4. Create a new pull request and submit it back to us!
