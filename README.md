@@ -34,10 +34,10 @@ Or install it yourself as:
 
 Start by [enabling an API Key on your account](https://coinbase.com/account/integrations).
 
-Next, create an instance of the client and pass it your API Key as the first (and only) parameter.
+Next, create an instance of the client and pass it your API Key + Secret as parameters.
 
 ```ruby
-coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'])
+coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRET'])
 ```
 
 Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).

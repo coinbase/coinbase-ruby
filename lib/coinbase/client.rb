@@ -10,11 +10,13 @@ module Coinbase
     include HTTParty
     ssl_ca_file File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
 
-    def initialize(api_key, options={})
+    def initialize(api_key, api_secret, options={})
       @api_key = api_key
+      @api_secret = api_secret
 
       # defaults
       options[:base_uri] ||= 'https://coinbase.com/api/v1'
+      @base_uri = options[:base_uri]
       options[:format]   ||= :json
       options.each do |k,v|
         self.class.send k, v
@@ -185,7 +187,18 @@ module Coinbase
     end
 
     def http_verb(verb, path, options={})
-      r = self.class.send(verb, path, {body: merge_options(options)})
+      nonce = options[:nonce] || (Time.now.to_f * 1e6).to_i
+      message = nonce.to_s + @base_uri + path + options.to_json
+      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha256'), @api_secret, message)
+
+      headers = {
+        'ACCESS_KEY' => @api_key,
+        'ACCESS_SIGNATURE' => signature,
+        'ACCESS_NONCE' => nonce.to_s,
+        "Content-Type" => "application/json",
+      }
+
+      r = self.class.send(verb, path, {headers: headers, body: options.to_json})
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
@@ -211,10 +224,6 @@ module Coinbase
         end
       end
       obj
-    end
-
-    def merge_options options
-      options.merge!({api_key: @api_key})
     end
   end
 end

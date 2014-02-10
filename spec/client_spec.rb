@@ -5,7 +5,7 @@ describe Coinbase::Client do
   BASE_URI = 'http://fake.com/api/v1' # switching to http (instead of https) seems to help FakeWeb
 
   before :all do
-    @c = Coinbase::Client.new 'api key', {base_uri: BASE_URI}
+    @c = Coinbase::Client.new 'api key', 'api secret', {base_uri: BASE_URI}
   end
 
   # Auth and Errors
