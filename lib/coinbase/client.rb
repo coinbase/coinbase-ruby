@@ -214,7 +214,7 @@ module Coinbase
     def http_verb(verb, path, options={})
       nonce = options[:nonce] || (Time.now.to_f * 1e6).to_i
       message = nonce.to_s + @base_uri + path + options.to_json
-      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest::Digest.new('sha256'), @api_secret, message)
+      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @api_secret, message)
 
       headers = {
         'ACCESS_KEY' => @api_key,
