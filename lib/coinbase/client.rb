@@ -8,7 +8,6 @@ require 'securerandom'
 module Coinbase
   class Client
     include HTTParty
-    ssl_ca_file File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
 
     def initialize(api_key, api_secret, options={})
       @api_key = api_key
@@ -186,6 +185,32 @@ module Coinbase
       http_verb :delete, path, options
     end
 
+    def self.whitelisted_cert_store
+      return @cert_store if @cert_store
+      path = File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
+
+      certs = [ [] ]
+      File.readlines(path).each{|line|
+        next if ["\n","#"].include?(line[0])
+        certs.last << line
+        certs << [] if line == "-----END CERTIFICATE-----\n"
+      }
+
+      @cert_store = OpenSSL::X509::Store.new
+
+      certs.each{|lines|
+        next if lines.empty?
+        cert = OpenSSL::X509::Certificate.new(lines.join)
+        @cert_store.add_cert(cert)
+      }
+
+      @cert_store
+    end
+
+    def ssl_options
+      { verify: true, cert_store: self.class.whitelisted_cert_store }
+    end
+
     def http_verb(verb, path, options={})
       nonce = options[:nonce] || (Time.now.to_f * 1e6).to_i
       message = nonce.to_s + @base_uri + path + options.to_json
@@ -198,7 +223,7 @@ module Coinbase
         "Content-Type" => "application/json",
       }
 
-      r = self.class.send(verb, path, {headers: headers, body: options.to_json})
+      r = self.class.send(verb, path, {headers: headers, body: options.to_json}.merge(ssl_options))
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
