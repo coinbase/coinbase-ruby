@@ -8,8 +8,8 @@ Gem::Specification.new do |gem|
   gem.version       = Coinbase::VERSION
   gem.authors       = ["Brian Armstrong"]
   gem.email         = [""]
-  gem.description   = ["Wrapper for the Coinbase Oauth2 API"]
-  gem.summary       = ["Wrapper for the Coinbase Oauth2 API"]
+  gem.description   = ["An easy way to buy, send, and accept bitcoin."]
+  gem.summary       = ["An easy way to buy, send, and accept bitcoin."]
   gem.homepage      = "https://coinbase.com/api/doc"
 
   gem.files         = `git ls-files`.split($/)

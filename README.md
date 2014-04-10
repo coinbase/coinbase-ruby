@@ -2,7 +2,7 @@
 
 An easy way to buy, send, and accept [bitcoin](http://en.wikipedia.org/wiki/Bitcoin) through the [Coinbase API](https://coinbase.com/docs/api/overview).
 
-This gem uses the [api key authentication method](https://coinbase.com/docs/api/authentication) which is an easy way to get started if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
+This gem is a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc). It uses the [api key + secret authentication method](https://coinbase.com/docs/api/authentication) which is an easy way to get started if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
 
 ## Installation
 
@@ -12,7 +12,7 @@ Add this line to your application's Gemfile:
 
 Then execute:
 
-    $ bundle
+    $ bundle install
 
 Or install it yourself as:
 
@@ -233,7 +233,7 @@ A receive address is returned also in case you need to send the new user a payme
 
 You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
 
-If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that don't have an explicit function name in the gem, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
+If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that haven't been added to the gem yet, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
 
 ```ruby
 coinbase.get('/account/balance').to_hash
