@@ -134,13 +134,17 @@ describe Coinbase::Client do
 
   # Prices
 
-  it "should let you get buy and sell prices" do
+  it "should let you get buy, sell, and spot prices" do
     response = {"amount"=>"13.84", "currency"=>"USD"}
     fake :get, "/prices/buy", response
     r = @c.buy_price 1
     r.to_f.should == 13.84
 
     fake :get, "/prices/sell", response
+    r = @c.sell_price 1
+    r.to_f.should == 13.84
+
+    fake :get, "/prices/spot_rate", response
     r = @c.sell_price 1
     r.to_f.should == 13.84
   end
