@@ -128,7 +128,7 @@ Transactions will always have an `id` attribute which is the primary way to iden
 
 ### Check bitcoin prices
 
-Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell.  This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
+Check the buy, sell, or spot price by passing a `quantity` of bitcoin that you'd like to buy or sell.  This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
 
 ```ruby
 coinbase.buy_price(1).format
@@ -141,7 +141,14 @@ coinbase.buy_price(30).format
 ```ruby
 coinbase.sell_price(1).format
 => "$17.93"
-coinbase.buy_price(30).format
+coinbase.sell_price(30).format
+=> "$534.60"
+```
+
+```ruby
+coinbase.spot_price(1).format
+=> "$17.93"
+coinbase.spot_price(30).format
 => "$534.60"
 ```
 
