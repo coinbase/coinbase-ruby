@@ -134,9 +134,9 @@ This will fetch the details/status of a transaction that was made within Coinbas
 
 ```ruby
 r = coinbase.transaction_details '5011f33df8182b142400000e'
-r.status
+r.transaction.status
 => 'pending'
-r.recipient_address
+r.transaction.recipient_address
 => 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x'
 ```
 
