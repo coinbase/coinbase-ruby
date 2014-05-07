@@ -75,6 +75,16 @@ describe Coinbase::Client do
     r = @c.transactions
     r.transactions.first.transaction.id.should == '5018f833f8182b129c00002f'
     r.transactions.last.transaction.hsh.should == '9d6a7d1112c3db9de5315b421a5153d71413f5f752aff75bf504b77df4e646a3'
+    r.transactions.first.transaction.amount.should == "-1.1".to_money("BTC")
+  end
+
+  it "should get transaction detail" do
+    response = {"transaction"=>{"id"=>"5011f33df8182b142400000e", "created_at"=>"2013-12-19T05:20:15-08:00", "hsh"=>"ff11a892bc6f7c345a5d74d52b0878f6a7e5011f33df8182b142400000e", "amount"=>{"amount"=>"-0.01000000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "email"=>"tuser2@example.com", "name"=>"User Two"}, "recipient_address"=>"1EWxf61QGAkQDNUDq6XynH2PdFRyZUm111", "notes"=>""}}
+    fake :get, "/transactions/5011f33df8182b142400000e", response
+    r = @c.transaction_details "5011f33df8182b142400000e"
+    r.transaction.id.should == "5011f33df8182b142400000e"
+    r.transaction.status.should == "pending"
+    r.transaction.amount.should == "-0.01".to_money("BTC")
   end
 
   it "should not fail if there are no transactions" do

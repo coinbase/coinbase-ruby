@@ -128,6 +128,18 @@ r.transactions.collect{|t| t.transaction.amount.format }
 
 Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase api.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
 
+### Get transaction details
+
+This will fetch the details/status of a transaction that was made within Coinbase or outside of Coinbase
+
+```ruby
+r = coinbase.transaction_details '5011f33df8182b142400000e'
+r.status
+=> 'pending'
+r.recipient_address
+=> 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x'
+```
+
 ### Check bitcoin prices
 
 Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell. This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
