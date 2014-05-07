@@ -157,7 +157,7 @@ describe Coinbase::Client do
     r.success?.should == true
     r.transfer.code.should == '6H7GYLXZ'
     r.transfer.status.should == 'created'
-    r.transfer.btc.should == 1.to_money
+    r.transfer.btc.should == 1.to_money("BTC")
   end
 
   # Sells
@@ -169,7 +169,7 @@ describe Coinbase::Client do
     r.success?.should == true
     r.transfer.code.should == 'RD2OC8AL'
     r.transfer.status.should == 'created'
-    r.transfer.btc.should == 1.to_money
+    r.transfer.btc.should == 1.to_money("BTC")
   end
 
   # Transfers
@@ -182,7 +182,7 @@ describe Coinbase::Client do
     t.type.should == "Buy"
     t.code.should == "QPCUCZHR"
     t.status.should == "Pending"
-    t.btc.should == 1.to_money
+    t.btc.should == 1.to_money("BTC")
   end
 
 
