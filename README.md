@@ -20,7 +20,7 @@ Or install it yourself as:
 
 ## Usage
 
-Start by [enabling an API Key on your account](https://coinbase.com/account/integrations).
+Start by [enabling an API Key on your account](https://coinbase.com/settings/api).
 
 Next, create an instance of the client and pass it your API Key + Secret as parameters.
 
