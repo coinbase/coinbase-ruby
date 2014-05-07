@@ -122,9 +122,14 @@ module Coinbase
 
     # Users
 
-    def create_user email, password=nil
+    def create_user email, password=nil, client_id=nil, scopes=nil
       password ||= SecureRandom.urlsafe_base64(12)
       options = {user: {email: email, password: password}}
+      if client_id
+        options[:client_id] = client_id
+        raise Error.new("Invalid scopes parameter; must be an array") if !scopes.is_a?(Array)
+        options[:scopes] = scopes.join(' ')
+      end
       post '/users', options
     end
 

@@ -254,6 +254,18 @@ r.receive_address
 
 A receive address is returned also in case you need to send the new user a payment right away.
 
+You can optionally pass in a client_id parameter that corresponds to your OAuth2 application and an array of permissions. When these are provided, the generated user will automatically have the permissions you’ve specified granted for your application. See the [API Reference](https://coinbase.com/api/doc/1.0/users/create.html) for more details.
+
+```ruby
+r = coinbase.create_user "newuser@example.com", "some password", client_id, ['transactions', 'buy', 'sell']
+r.user.email
+=> "newuser@example.com"
+r.receive_address
+=> "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
+r.oauth.access_token
+=> "93865b9cae83706ae59220c013bc0afd93865b9cae83706ae59220c013bc0afd"
+```
+
 ## Adding new methods
 
 You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).

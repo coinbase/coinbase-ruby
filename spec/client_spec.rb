@@ -142,6 +142,34 @@ describe Coinbase::Client do
     r.user.receive_address.should == "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
   end
 
+  it "should let you create users with OAuth" do
+    response = {
+      "success"=>true,
+      "oauth" => {
+        "access_token" => "the_access_token",
+        "refresh_token" => "the_refresh_token",
+        "scope" => "transactions buy sell",
+        "token_type" => "bearer"
+      },
+      "user" => {
+        "id"=>"501a3d22f8182b2754000011",
+        "name"=>"New User",
+        "email"=>"newuser@example.com",
+        "receive_address"=>"mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
+      }
+    }
+    fake :post, "/users", response
+    r = @c.create_user "newuser@example.com", "newpassword", "the_client_id", ['transactions', 'buy', 'sell']
+    r.success.should == true
+    r.oauth.access_token.should == "the_access_token"
+    r.user.email.should == "newuser@example.com"
+    r.user.receive_address.should == "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
+  end
+
+  it "should not let you specify client_id without scopes" do
+    expect{ @c.create_user "newuser@example.com", "newpassword", "the_client_id" }.to raise_error(Coinbase::Client::Error)
+  end
+
   # Prices
 
   it "should let you get buy, sell, and spot prices" do
