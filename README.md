@@ -130,6 +130,8 @@ Transactions will always have an `id` attribute which is the primary way to iden
 
 Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell. This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
 
+The `buy_price` and `sell_price` per Bitcoin will increase and decrease respectively as `quantity` increases. This [slippage](http://en.wikipedia.org/wiki/Slippage_(finance)) is normal and is influenced by the [market depth](http://en.wikipedia.org/wiki/Market_depth) on the exchanges we use.
+
 ```ruby
 coinbase.buy_price(1).format
 => "$17.95"
