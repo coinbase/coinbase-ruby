@@ -45,7 +45,7 @@ describe Coinbase::Client do
     fake :post, '/buttons', response
     r = @c.create_button "Order 123", 1.23, "Sample description"
 
-    # Match previous behavior where BTC is assumed to be the default currency
+    # Ensure BTC is assumed to be the default currency
     post_params = JSON.parse(FakeWeb.last_request.body)
     post_params['button']['price_currency_iso'].should == "BTC"
     post_params['button']['price_string'].should == "1.23000000"
@@ -63,6 +63,20 @@ describe Coinbase::Client do
     r.success?.should == true
     r.button.name.should == "Order 123"
     r.embed_html.should == %[<iframe src="https://coinbase.com/inline_payments/93865b9cae83706ae59220c013bc0afd" style="width:500px;height:160px;border:none;box-shadow:0 1px 3px rgba(0,0,0,0.25);overflow:hidden;" scrolling="no" allowtransparency="true" frameborder="0"></iframe>]
+  end
+
+  it "should create a new button with price in USD" do
+    response = {:success=>true, :button=>{:code=>"93865b9cae83706ae59220c013bc0afd", :type=>"buy_now", :style=>"custom_large", :text=>"Pay With Bitcoin", :name=>"Order 123", :description=>"Sample description", :custom=>"Order123", :price=>{:cents=>123, :currency_iso=>"USD"}}}
+    fake :post, '/buttons', response
+    r = @c.create_button "Order 123", 1.23.to_money("USD"), "Sample description"
+
+    post_params = JSON.parse(FakeWeb.last_request.body)
+    post_params['button']['price_currency_iso'].should == "USD"
+    post_params['button']['price_string'].should == "1.23"
+
+    r.success?.should == true
+    r.button.name.should == "Order 123"
+    r.embed_html.should == %[<div class="coinbase-button" data-code="93865b9cae83706ae59220c013bc0afd"></div><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>]
   end
 
   it "should create order for the button" do
@@ -90,15 +104,28 @@ describe Coinbase::Client do
     r.transactions.should_not be_nil
   end
 
-  it "should send money" do
+  it "should send money in BTC" do
     response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
     fake :post, '/transactions/send_money', response
     r = @c.send_money "user1@example.com", 1.2345, "Sample transaction for you"
 
-    # Match previous behavior where BTC is assumed to be the default currency
+    # Ensure BTC is assumed to be the default currency
     post_params = JSON.parse(FakeWeb.last_request.body)
     post_params['transaction']['amount_currency_iso'].should == "BTC"
     post_params['transaction']['amount_string'].should == "1.23450000"
+
+    r.success.should == true
+    r.transaction.id.should == '501a1791f8182b2071000087'
+  end
+
+  it "should send money in USD" do
+    response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
+    fake :post, '/transactions/send_money', response
+    r = @c.send_money "user1@example.com", 500.to_money("USD"), "Sample transaction for you"
+
+    post_params = JSON.parse(FakeWeb.last_request.body)
+    post_params['transaction']['amount_currency_iso'].should == "USD"
+    post_params['transaction']['amount_string'].should == "500.00"
 
     r.success.should == true
     r.transaction.id.should == '501a1791f8182b2071000087'
@@ -109,10 +136,24 @@ describe Coinbase::Client do
     fake :post, '/transactions/request_money', response
     r = @c.request_money "user1@example.com", 1.2345, "Sample transaction for you"
 
-    # Match previous behavior where BTC is assumed to be the default currency
+    # Ensure BTC is assumed to be the default currency
     post_params = JSON.parse(FakeWeb.last_request.body)
     post_params['transaction']['amount_currency_iso'].should == "BTC"
     post_params['transaction']['amount_string'].should == "1.23450000"
+
+    r.success.should == true
+    r.transaction.id.should == '501a3554f8182b2754000003'
+  end
+
+  it "should request money in USD" do
+    response = {"success"=>true, "transaction"=>{"id"=>"501a3554f8182b2754000003", "created_at"=>"2012-08-02T01:07:48-07:00", "notes"=>"Sample request for you!", "amount"=>{"amount"=>"1.23400000", "currency"=>"BTC"}, "request"=>true, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}}}
+    fake :post, '/transactions/request_money', response
+    r = @c.request_money "user1@example.com", 500.to_money("USD"), "Sample transaction for you"
+
+    # Ensure BTC is assumed to be the default currency
+    post_params = JSON.parse(FakeWeb.last_request.body)
+    post_params['transaction']['amount_currency_iso'].should == "USD"
+    post_params['transaction']['amount_string'].should == "500.00"
 
     r.success.should == true
     r.transaction.id.should == '501a3554f8182b2754000003'
