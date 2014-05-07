@@ -80,6 +80,10 @@ module Coinbase
       r
     end
 
+    def get_transaction transaction_id
+      r = get "/transactions/#{transaction_id}"
+    end
+
     def send_money to, amount, notes=nil, options={}
       options[:transaction]                         ||= {}
       options[:transaction][:to]                    ||= to
