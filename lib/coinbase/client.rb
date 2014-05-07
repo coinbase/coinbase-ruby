@@ -138,6 +138,11 @@ module Coinbase
       r['amount'].to_money(r['currency'])
     end
 
+    def spot_price currency='USD'
+      r = get '/prices/spot_rate', {currency: currency}
+      r['amount'].to_money(r['currency'])
+    end
+
     # Buys
 
     def buy! qty
