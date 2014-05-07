@@ -43,7 +43,7 @@ module Coinbase
       options[:button]                        ||= {}
       options[:button][:name]                 ||= name
       price = price.to_money unless price.is_a?(Money)
-      options[:button][:price_string]         ||= price.to_f.to_s
+      options[:button][:price_string]         ||= price.to_s
       options[:button][:price_currency_iso]   ||= price.currency.iso_code
       options[:button][:description]          ||= description
       options[:button][:custom]               ||= custom
@@ -82,7 +82,7 @@ module Coinbase
       options[:transaction]                         ||= {}
       options[:transaction][:to]                    ||= to
       amount = amount.to_money unless amount.is_a?(Money)
-      options[:transaction][:amount_string]         ||= amount.to_f.to_s
+      options[:transaction][:amount_string]         ||= amount.to_s
       options[:transaction][:amount_currency_iso]   ||= amount.currency.iso_code
       options[:transaction][:notes]                 ||= notes
       r = post '/transactions/send_money', options
@@ -96,7 +96,7 @@ module Coinbase
       options[:transaction]                         ||= {}
       options[:transaction][:from]                  ||= from
       amount = amount.to_money unless amount.is_a?(Money)
-      options[:transaction][:amount_string]         ||= amount.to_f.to_s
+      options[:transaction][:amount_string]         ||= amount.to_s
       options[:transaction][:amount_currency_iso]   ||= amount.currency.iso_code
       options[:transaction][:notes]                 ||= notes
       r = post '/transactions/request_money', options
