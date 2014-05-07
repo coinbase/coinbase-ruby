@@ -37,19 +37,21 @@ coinbase.balance
 => #<Money fractional:20035300000 currency:BTC>
 coinbase.balance.format
 => "200.35300000 BTC"
-coinbase.balance.to_f
-=> 200.353
+coinbase.balance.to_d
+=> #<BigDecimal:7ff36b091670,'0.200353E3',18(54)>
+coinbase.balance.to_s
+=> 200.35300000 # BTC amount
 ```
 
-[Money objects](https://github.com/RubyMoney/money) are returned for most amounts dealing with currency.  You can call `to_f`, `format`, or perform math operations on money objects.
+[Money objects](https://github.com/RubyMoney/money) are returned for most amounts dealing with currency.  You can call `to_d`, `format`, or perform math operations on money objects.
 
 ## Examples
 
 ### Check your balance
 
 ```ruby
-coinbase.balance.to_f
-=> 200.353 # BTC amount
+coinbase.balance.to_s
+=> "200.35300000" # BTC amount
 ```
 
 ### Send bitcoin
@@ -258,6 +260,18 @@ Or feel free to add a new wrapper method and submit a pull request.
 If someone gains access to your API Key they will have complete control of your Coinbase account.  This includes the abillity to send all of your bitcoins elsewhere.
 
 For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API key securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you have never done this before.
+
+## Decimal precision
+
+This gem relies on the [Money](https://github.com/RubyMoney/money) gem, which by default uses the [BigDecimal](www.ruby-doc.org/stdlib-2.0/libdoc/bigdecimal/rdoc/BigDecimal.html) class for arithmetic to maintain decimal precision for all values returned.
+
+When working with currency values in your application, it's important to remember that floating point arithmetic is prone to [rounding errors](http://en.wikipedia.org/wiki/Round-off_error). 
+
+For this reason, we provide examples which use BigDecimal as the preferred way to perform arithmetic:
+
+```coinbase.balance.to_d
+=> #<BigDecimal:7ff36b091670,'0.200353E3',18(54)>
+```
 
 ## Testing
 
