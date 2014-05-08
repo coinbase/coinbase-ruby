@@ -133,7 +133,7 @@ Transactions will always have an `id` attribute which is the primary way to iden
 This will fetch the details/status of a transaction that was made within Coinbase or outside of Coinbase
 
 ```ruby
-r = coinbase.transaction_details '5011f33df8182b142400000e'
+r = coinbase.transaction '5011f33df8182b142400000e'
 r.transaction.status
 => 'pending'
 r.transaction.recipient_address

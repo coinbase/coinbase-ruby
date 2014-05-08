@@ -101,7 +101,7 @@ describe Coinbase::Client do
   it "should get transaction detail" do
     response = {"transaction"=>{"id"=>"5011f33df8182b142400000e", "created_at"=>"2013-12-19T05:20:15-08:00", "hsh"=>"ff11a892bc6f7c345a5d74d52b0878f6a7e5011f33df8182b142400000e", "amount"=>{"amount"=>"-0.01000000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "email"=>"tuser2@example.com", "name"=>"User Two"}, "recipient_address"=>"1EWxf61QGAkQDNUDq6XynH2PdFRyZUm111", "notes"=>""}}
     fake :get, "/transactions/5011f33df8182b142400000e", response
-    r = @c.transaction_details "5011f33df8182b142400000e"
+    r = @c.transaction "5011f33df8182b142400000e"
     r.transaction.id.should == "5011f33df8182b142400000e"
     r.transaction.status.should == "pending"
     r.transaction.amount.should == "-0.01".to_money("BTC")

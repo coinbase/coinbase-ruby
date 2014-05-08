@@ -75,7 +75,7 @@ module Coinbase
       r
     end
 
-    def transaction_details transaction_id
+    def transaction transaction_id
       r = get "/transactions/#{transaction_id}"
       convert_money_objects(r.transaction)
       r
