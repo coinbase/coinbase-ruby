@@ -51,9 +51,14 @@ module Coinbase
       hash
     end
 
+    def refresh!
+      raise "Access token not initialized." unless @oauth_token
+      @oauth_token = @oauth_token.refresh!
+    end
+
     def oauth_token
       raise "Access token not initialized." unless @oauth_token
-      @oauth_token = @oauth_token.refresh! if @oauth_token.expired?
+      refresh! if @oauth_token.expired?
       @oauth_token
     end
 
