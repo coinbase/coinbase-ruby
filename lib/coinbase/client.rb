@@ -199,7 +199,10 @@ module Coinbase
     end
 
     def self.whitelisted_cert_store
-      return @cert_store if @cert_store
+      @@cert_store ||= build_whitelisted_cert_store
+    end
+
+    def self.build_whitelisted_cert_store
       path = File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
 
       certs = [ [] ]
@@ -209,15 +212,15 @@ module Coinbase
         certs << [] if line == "-----END CERTIFICATE-----\n"
       }
 
-      @cert_store = OpenSSL::X509::Store.new
+      result = OpenSSL::X509::Store.new
 
       certs.each{|lines|
         next if lines.empty?
         cert = OpenSSL::X509::Certificate.new(lines.join)
-        @cert_store.add_cert(cert)
+        result.add_cert(cert)
       }
 
-      @cert_store
+      result
     end
 
     def ssl_options
