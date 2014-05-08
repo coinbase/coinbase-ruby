@@ -63,7 +63,7 @@ module Coinbase
     end
 
     def credentials
-      oauth_token.to_hash
+      @oauth_token.to_hash
     end
 
     private
