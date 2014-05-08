@@ -7,7 +7,6 @@ describe Coinbase::Client do
   before :all do
     @c = Coinbase::Client.new 'api key', 'api secret', {base_uri: BASE_URI}
   end
-
   # Auth and Errors
 
   it "raise errors" do
@@ -282,6 +281,36 @@ describe Coinbase::Client do
     t.btc.should == 1.to_money("BTC")
   end
 
+  describe Coinbase::OauthClient do
+    subject do
+      Coinbase::OauthClient.new('api key', access_token: 'oauth_access_token')
+    end
+
+    it "should get balance" do
+      subject.stub(:balance) {  50.to_money('BTC') }
+      subject.balance.should == 50.to_money('BTC')
+    end
+
+    it "should get a receive address" do
+      subject.stub(:receive_address) {
+        Response = Struct.new(:address, :callback_url)
+        Response.new("muVu2JZo8PbewBHRp6bpqFvVD87qvqEHWA", nil)
+      }
+      a = subject.receive_address
+      a.address.should == "muVu2JZo8PbewBHRp6bpqFvVD87qvqEHWA"
+      a.callback_url.should == nil
+    end
+
+    it "should generate new receive addresses" do
+      subject.stub(:generate_receive_address) {
+        Response = Struct.new(:address, :callback_url)
+        Response.new("mmxJyTdxHUJUDoptwLHAGxLEd1rAxDJ7EV", "http://example.com/callback")
+      }
+      a = subject.generate_receive_address
+      a.address.should == "mmxJyTdxHUJUDoptwLHAGxLEd1rAxDJ7EV"
+      a.callback_url.should == "http://example.com/callback"
+    end
+  end
 
   private
 
