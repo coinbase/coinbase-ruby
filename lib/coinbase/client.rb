@@ -70,8 +70,8 @@ module Coinbase
 
     # Transactions
 
-    def transactions page=1
-      r = get '/transactions', {page: page}
+    def transactions page=1, options ={}
+      r = get '/transactions', {page: page}.merge(options)
       r.transactions ||= []
       convert_money_objects(r.transactions)
       r
@@ -241,7 +241,12 @@ module Coinbase
         "Content-Type" => "application/json",
       }
 
-      r = self.class.send(verb, path, {headers: headers, body: options.to_json}.merge(ssl_options))
+      if [:get, :delete].include? verb
+        request_options = {headers: headers, query: options}
+      else
+        request_options = {headers: headers, body: options.to_json}
+      end
+      r = self.class.send(verb, path, request_options.merge(ssl_options))
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
