@@ -32,6 +32,12 @@ module Coinbase
       h['amount'].to_money(h['currency'])
     end
 
+    def accounts options={}
+      accts = get '/accounts', options
+      accts = convert_money_objects(accts)
+      accts
+    end
+
     def receive_address options={}
       get '/account/receive_address', options
     end

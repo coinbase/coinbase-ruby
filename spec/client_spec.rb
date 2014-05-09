@@ -39,6 +39,60 @@ describe Coinbase::Client do
     a.callback_url.should == "http://example.com/callback"
   end
 
+  it "should list accounts" do
+    accounts_response = <<-eos
+      {
+        "accounts": [
+          {
+            "id": "536a541fa9393bb3c7000023",
+            "name": "My Wallet",
+            "balance": {
+              "amount": "50.00000000",
+              "currency": "BTC"
+            },
+            "native_balance": {
+              "amount": "500.12",
+              "currency": "USD"
+            },
+            "created_at": "2014-05-07T08:41:19-07:00",
+            "primary": true,
+            "active": true
+          },
+          {
+            "id": "536a541fa9393bb3c7000034",
+            "name": "Savings",
+            "balance": {
+              "amount": "0.00000000",
+              "currency": "BTC"
+            },
+            "native_balance": {
+              "amount": "0.00",
+              "currency": "USD"
+            },
+            "created_at": "2014-05-07T08:50:10-07:00",
+            "primary": false,
+            "active": true
+          }
+        ],
+        "total_count": 2,
+        "num_pages": 1,
+        "current_page": 1
+      }
+    eos
+
+    fake :get, '/accounts', JSON.parse(accounts_response)
+    r = @c.accounts
+    r.total_count.should == 2
+    primary_account = r.accounts.select { |acct| acct.primary }.first
+    primary_account.id.should == "536a541fa9393bb3c7000023"
+    primary_account.balance.should == 50.to_money("BTC")
+
+    # Make sure paging works
+    fake :get, '/accounts?page=2', JSON.parse(accounts_response)
+    r = @c.accounts :page => 2
+    FakeWeb.last_request.path.should include("page=2")
+  end
+
   # Buttons
 
   it "should create a new button" do
