@@ -6,6 +6,7 @@ describe Coinbase::Client do
 
   before :all do
     @c = Coinbase::Client.new 'api key', 'api secret', {base_uri: BASE_URI}
+    FakeWeb.allow_net_connect = false
   end
 
   # Auth and Errors
@@ -91,7 +92,7 @@ describe Coinbase::Client do
 
   it "should get transaction list" do
     response = {"current_user"=>{"id"=>"5011f33df8182b142400000e", "email"=>"user2@example.com", "name"=>"user2@example.com"}, "balance"=>{"amount"=>"50.00000000", "currency"=>"BTC"}, "total_count"=>2, "num_pages"=>1, "current_page"=>1, "transactions"=>[{"transaction"=>{"id"=>"5018f833f8182b129c00002f", "created_at"=>"2012-08-01T02:34:43-07:00", "amount"=>{"amount"=>"-1.10000000", "currency"=>"BTC"}, "request"=>true, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}, {"transaction"=>{"id"=>"5018f833f8182b129c00002e", "created_at"=>"2012-08-01T02:36:43-07:00", "hsh" => "9d6a7d1112c3db9de5315b421a5153d71413f5f752aff75bf504b77df4e646a3", "amount"=>{"amount"=>"-1.00000000", "currency"=>"BTC"}, "request"=>false, "status"=>"complete", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient_address"=>"37muSN5ZrukVTvyVh3mT5Zc5ew9L9CBare"}}]}
-    fake :get, '/transactions', response
+    fake :get, '/transactions?page=1', response
     r = @c.transactions
     r.transactions.first.transaction.id.should == '5018f833f8182b129c00002f'
     r.transactions.last.transaction.hsh.should == '9d6a7d1112c3db9de5315b421a5153d71413f5f752aff75bf504b77df4e646a3'
@@ -109,7 +110,7 @@ describe Coinbase::Client do
 
   it "should not fail if there are no transactions" do
     response = {"current_user"=>{"id"=>"5011f33df8182b142400000e", "email"=>"user2@example.com", "name"=>"user2@example.com"}, "balance"=>{"amount"=>"0.00000000", "currency"=>"BTC"}, "total_count"=>0, "num_pages"=>0, "current_page"=>1}
-    fake :get, '/transactions', response
+    fake :get, '/transactions?page=1', response
     r = @c.transactions
     r.transactions.should_not be_nil
   end
@@ -232,15 +233,15 @@ describe Coinbase::Client do
   # Prices
 
   it "should let you get buy, sell, and spot prices" do
-    fake :get, "/prices/buy", {"amount"=>"13.85", "currency"=>"USD"}
+    fake :get, "/prices/buy?qty=1", {"amount"=>"13.85", "currency"=>"USD"}
     r = @c.buy_price 1
     r.to_f.should == 13.85
 
-    fake :get, "/prices/sell", {"amount"=>"13.83", "currency"=>"USD"}
+    fake :get, "/prices/sell?qty=1", {"amount"=>"13.83", "currency"=>"USD"}
     r = @c.sell_price 1
     r.to_f.should == 13.83
 
-    fake :get, "/prices/spot_rate", {"amount"=>"13.84", "currency"=>"USD"}
+    fake :get, "/prices/spot_rate?currency=USD", {"amount"=>"13.84", "currency"=>"USD"}
     r = @c.spot_price
     r.to_f.should == 13.84
   end
@@ -282,6 +283,17 @@ describe Coinbase::Client do
     t.btc.should == 1.to_money("BTC")
   end
 
+  it "should support pagination" do
+    response = {"transfers" => [{"transfer" => {"type" => "Buy", "code" => "QPCUCZHZ", "created_at" => "2013-02-27T23:28:18-08:00", "fees" => {"coinbase" => {"cents" => 14, "currency_iso" => "USD"}, "bank" => {"cents" => 15, "currency_iso" => "USD"} }, "payout_date" => "2013-03-05T18:00:00-08:00", "transaction_id" => "5011f33df8182b142400000e", "status" => "Pending", "btc" => {"amount" => "1.00000000", "currency" => "BTC"}, "subtotal" => {"amount" => "13.55", "currency" => "USD"}, "total" => {"amount" => "13.84", "currency" => "USD"}, "description" => "Paid for with $13.84 from Test xxxxx3111."} } ], "total_count" => 1, "num_pages" => 1, "current_page" => 1 }
+    fake :get, "/transfers?page=2", response
+    r = @c.transfers :page => 2
+    t = r.transfers.first.transfer
+    t.type.should == "Buy"
+    t.code.should == "QPCUCZHZ"
+    t.status.should == "Pending"
+    t.btc.should == 1.to_money("BTC")
+    FakeWeb.last_request.path.should include("page=2")
+  end
 
   private
 
