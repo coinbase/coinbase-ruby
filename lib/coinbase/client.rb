@@ -228,9 +228,19 @@ module Coinbase
     end
 
     def http_verb(verb, path, options={})
+
       nonce = options[:nonce] || (Time.now.to_f * 1e6).to_i
-      message = nonce.to_s + @base_uri + path + options.to_json
-      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @api_secret, message)
+
+      if [:get, :delete].include? verb
+        request_options = {}
+        path = "#{path}?#{URI.encode_www_form(options)}"
+        hmac_message = nonce.to_s + @base_uri + path
+      else
+        request_options = {body: options.to_json}
+        hmac_message = nonce.to_s + @base_uri + path + options.to_json
+      end
+
+      signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @api_secret, hmac_message)
 
       headers = {
         'ACCESS_KEY' => @api_key,
@@ -239,11 +249,8 @@ module Coinbase
         "Content-Type" => "application/json",
       }
 
-      if [:get, :delete].include? verb
-        request_options = {headers: headers, query: options}
-      else
-        request_options = {headers: headers, body: options.to_json}
-      end
+      request_options[:headers] = headers
+
       r = self.class.send(verb, path, request_options.merge(ssl_options))
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
