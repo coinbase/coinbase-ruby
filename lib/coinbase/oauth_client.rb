@@ -39,10 +39,12 @@ module Coinbase
 
     def http_verb(verb, path, options={})
       path = remove_leading_slash(path)
-      request_options = {
-        :mode => :header,
-        :body => options
-      }
+
+      if [:get, :delete].include? verb
+        request_options = {params: options}
+      else
+        request_options = {headers: {"Content-Type" => "application/json"}, body: options.to_json}
+      end
       response = oauth_token.request(verb, path, request_options)
 
       hash = Hashie::Mash.new(JSON.parse(response.body))
