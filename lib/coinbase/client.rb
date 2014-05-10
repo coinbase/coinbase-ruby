@@ -10,12 +10,14 @@ module Coinbase
   class Client
     include HTTParty
 
+    BASE_URI = 'https://coinbase.com/api/v1'
+
     def initialize(api_key, api_secret, options={})
       @api_key = api_key
       @api_secret = api_secret
 
       # defaults
-      options[:base_uri] ||= 'https://coinbase.com/api/v1'
+      options[:base_uri] ||= BASE_URI
       @base_uri = options[:base_uri]
       options[:format]   ||= :json
       options.each do |k,v|

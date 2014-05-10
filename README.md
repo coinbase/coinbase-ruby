@@ -2,7 +2,7 @@
 
 An easy way to buy, send, and accept [bitcoin](http://en.wikipedia.org/wiki/Bitcoin) through the [Coinbase API](https://coinbase.com/docs/api/overview).
 
-This gem is a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc). It uses the [api key + secret authentication method](https://coinbase.com/docs/api/authentication) which is an easy way to get started if you only need to connect to your own Coinbase account.  If you need other users to grant your application access, you may want to try an OAuth2 integration instead using the [OAuth2 Ruby Gem](https://github.com/intridea/oauth2) as a starting point.
+This gem is a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc). It supports both the the [api key + secret authentication method](https://coinbase.com/docs/api/authentication) as well as OAuth 2.0 for performing actions on other people's account.
 
 ## Installation
 
@@ -20,7 +20,9 @@ Or install it yourself as:
 
 ## Usage
 
-Start by [enabling an API Key on your account](https://coinbase.com/settings/api).
+### HMAC Authentication (for accessing your own account)
+
+Start by [enabling an API Key on your account](https://coinbase.com/settings/api)
 
 Next, create an instance of the client and pass it your API Key + Secret as parameters.
 
@@ -28,7 +30,21 @@ Next, create an instance of the client and pass it your API Key + Secret as para
 coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRET'])
 ```
 
-Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
+### OAuth 2.0 Authentication (for accessing others' accounts)
+
+Start by [creating a new OAuth 2.0 application](https://coinbase.com/oauth/applications)
+
+```ruby
+# Obtaining the OAuth credentials is outside the scope of this gem
+user_credentials = {
+	:access_token => 'access_token',
+	:refresh_token => 'refresh_token',
+	:expires_at => Time.now + 1.day
+}
+coinbase = Coinbase::OAuthClient.new(ENV['COINBASE_CLIENT_ID'], ENV['COINBASE_CLIENT_SECRET'], user_credentials)
+```
+
+Notice here that we did not hard code the API keys into our codebase, but set it in an environment variable instead. This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
 
 Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
