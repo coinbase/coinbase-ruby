@@ -235,7 +235,7 @@ module Coinbase
 
       if [:get, :delete].include? verb
         request_options = {}
-        path = "#{path}?#{URI.encode_www_form(options)}"
+        path = "#{path}?#{URI.encode_www_form(options)}" if !options.empty?
         hmac_message = nonce.to_s + @base_uri + path
       else
         request_options = {body: options.to_json}
