@@ -20,7 +20,9 @@ Or install it yourself as:
 
 ## Usage
 
-Start by [enabling an API Key on your account](https://coinbase.com/settings/api).
+### HMAC Authentication (for accessing your own account)
+
+Start by [enabling an API Key on your account](https://coinbase.com/settings/api)
 
 Next, create an instance of the client and pass it your API Key + Secret as parameters.
 
@@ -28,7 +30,9 @@ Next, create an instance of the client and pass it your API Key + Secret as para
 coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRET'])
 ```
 
-or, if using OAuth,
+### OAuth 2.0 Authentication (for accessing others' accounts)
+
+Start by [creating a new OAuth 2.0 application](https://coinbase.com/oauth/applications)
 
 ```ruby
 # Obtaining the OAuth credentials is outside the scope of this gem
@@ -40,7 +44,7 @@ user_credentials = {
 coinbase = Coinbase::OAuthClient.new(ENV['COINBASE_CLIENT_ID'], ENV['COINBASE_CLIENT_SECRET'], user_credentials)
 ```
 
-Notice here that we did not hard code the API key into our codebase, but set it in an environment variable instead.  This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
+Notice here that we did not hard code the API keys into our codebase, but set it in an environment variable instead. This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
 
 Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
