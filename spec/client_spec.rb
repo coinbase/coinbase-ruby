@@ -349,6 +349,52 @@ describe Coinbase::Client do
     FakeWeb.last_request.path.should include("page=2")
   end
 
+  # Addresses
+
+  it 'should read addresses json' do
+    raw_addresses = <<-eos
+      {
+        "addresses": [
+          {
+            "address": {
+              "address": "moLxGrqWNcnGq4A8Caq8EGP4n9GUGWanj4",
+              "callback_url": null,
+              "label": "My Label",
+              "created_at": "2013-05-09T23:07:08-07:00"
+            }
+          },
+          {
+            "address": {
+              "address": "mwigfecvyG4MZjb6R5jMbmNcs7TkzhUaCj",
+              "callback_url": null,
+              "label": null,
+              "created_at": "2013-05-09T17:50:37-07:00"
+            }
+          }
+        ],
+        "total_count": 2,
+        "num_pages": 1,
+        "current_page": 1
+      }
+    eos
+
+    fake :get, '/addresses?page=1', JSON.parse(raw_addresses)
+
+    r = @c.addresses
+    r.total_count.should == 2
+    r.num_pages.should == 1
+    r.current_page.should == 1
+    r.addresses.size.should == 2
+    r.addresses.first.address.address.should == 'moLxGrqWNcnGq4A8Caq8EGP4n9GUGWanj4'
+    r.addresses.first.address.callback_url.should == nil
+    r.addresses.first.address.label.should == 'My Label'
+    r.addresses.first.addresscreated_at == '2013-05-09T23:07:08-07:00'
+    r.addresses[1].address.address.should == 'mwigfecvyG4MZjb6R5jMbmNcs7TkzhUaCj'
+    r.addresses[1].address.callback_url.should == nil
+    r.addresses[1].address.label.should == nil
+    r.addresses[1].address.created_at.should == '2013-05-09T17:50:37-07:00'
+  end
+
   private
 
   def fake method, path, body
