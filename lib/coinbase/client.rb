@@ -74,6 +74,10 @@ module Coinbase
       post "/buttons/#{button_id}/create_order"
     end
 
+    def addresses page=1, options={}
+      get '/addresses', {page: page}.merge(options)
+    end
+
     # Transactions
 
     def transactions page=1, options ={}
