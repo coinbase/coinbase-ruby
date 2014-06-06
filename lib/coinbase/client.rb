@@ -12,7 +12,7 @@ module Coinbase
 
     BASE_URI = 'https://coinbase.com/api/v1'
 
-    def initialize(api_key, api_secret, options={})
+    def initialize(api_key='', api_secret='', options={})
       @api_key = api_key
       @api_secret = api_secret
 
@@ -163,6 +163,10 @@ module Coinbase
     def spot_price currency='USD'
       r = get '/prices/spot_rate', {currency: currency}
       r['amount'].to_money(r['currency'])
+    end
+
+    def exchange_rates
+      get('/currencies/exchange_rates')
     end
 
     # Buys
