@@ -22,6 +22,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "rspec", "~> 2.12"
   gem.add_development_dependency "fakeweb", "~> 1.3.0"
   gem.add_development_dependency "rake"
+  gem.add_development_dependency 'simplecov', '~> 0.7.1'
 
   # Gems that must be intalled for sift to work
   gem.add_dependency "httparty", ">= 0.8.3"
