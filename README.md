@@ -282,6 +282,39 @@ r.oauth.access_token
 => "93865b9cae83706ae59220c013bc0afd93865b9cae83706ae59220c013bc0afd"
 ```
 
+## Exchange rates
+
+This gem also extends Money::Bank::VariableExchange with Money::Bank::Coinbase to give you access to Coinbase exchange rates.
+
+### Usage
+
+``` ruby
+cb_bank = Money::Bank::Coinbase.new
+
+# Call this before calculating exchange rates
+# This will download the rates from CB
+cb_bank.fetch_rates!
+
+# Exchange 100 USD to BTC
+# API is the same as the money gem
+cb_bank.exchange_with(Money.new(10000, :USD), :BTC) # '0.15210000'.to_money(:BTC)
+
+# Set as default bank to do arithmetic and comparisons on Money objects
+Money.default_bank = cb_bank
+money1 = Money.new(10)
+money1.bank # cb_bank
+
+Money.us_dollar(10000).exchange_to(:BTC) # '0.15210000'.to_money(:BTC)
+'1'.to_money(:BTC) > '1'.to_money(:USD) # true
+
+# Expire rates after some number of seconds (by default, rates are only updated when you call fetch_rates!)
+cb_bank.ttl_in_seconds = 3600 # Cache rates for one hour
+
+# After an hour, different rates
+cb_bank.exchange_with(Money.new(10000, :USD), :BTC) # '0.15310000'.to_money(:BTC)
+
+```
+
 ## Adding new methods
 
 You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
