@@ -389,7 +389,7 @@ describe Coinbase::Client do
     r.addresses.first.address.address.should == 'moLxGrqWNcnGq4A8Caq8EGP4n9GUGWanj4'
     r.addresses.first.address.callback_url.should == nil
     r.addresses.first.address.label.should == 'My Label'
-    r.addresses.first.addresscreated_at == '2013-05-09T23:07:08-07:00'
+    r.addresses.first.address.created_at.should == '2013-05-09T23:07:08-07:00'
     r.addresses[1].address.address.should == 'mwigfecvyG4MZjb6R5jMbmNcs7TkzhUaCj'
     r.addresses[1].address.callback_url.should == nil
     r.addresses[1].address.label.should == nil
