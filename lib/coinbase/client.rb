@@ -189,8 +189,8 @@ module Coinbase
 
     # Transfers
 
-    def transfers options={}
-      r = get '/transfers', options
+    def transfers page=1, options={}
+      r = get '/transfers', {page: page}.merge(options)
       r = convert_money_objects(r)
       r.transfers.each do |t|
         t.transfer.payout_date = Time.parse(t.transfer.payout_date) rescue nil
