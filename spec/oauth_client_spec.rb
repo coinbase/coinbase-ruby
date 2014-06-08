@@ -40,7 +40,7 @@ describe Coinbase::Client do
   it "should support pagination" do
     response = {"transfers" => [{"transfer" => {"type" => "Buy", "code" => "QPCUCZHL", "created_at" => "2013-02-27T23:28:18-08:00", "fees" => {"coinbase" => {"cents" => 14, "currency_iso" => "USD"}, "bank" => {"cents" => 15, "currency_iso" => "USD"} }, "payout_date" => "2013-03-05T18:00:00-08:00", "transaction_id" => "5011f33df8182b142400000e", "status" => "Pending", "btc" => {"amount" => "1.00000000", "currency" => "BTC"}, "subtotal" => {"amount" => "13.55", "currency" => "USD"}, "total" => {"amount" => "13.84", "currency" => "USD"}, "description" => "Paid for with $13.84 from Test xxxxx3111."} } ], "total_count" => 1, "num_pages" => 1, "current_page" => 1 }
     fake :get, "/transfers?page=3", response
-    r = @c.transfers :page => 3
+    r = @c.transfers 3
     t = r.transfers.first.transfer
     t.type.should == "Buy"
     t.code.should == "QPCUCZHL"
