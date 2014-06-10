@@ -87,6 +87,7 @@ describe Coinbase::Client do
     primary_account = r.accounts.select { |acct| acct.primary }.first
     primary_account.id.should == "536a541fa9393bb3c7000023"
     primary_account.balance.should == 50.to_money("BTC")
+    primary_account.created_at.should == Time.parse('2014-05-07T08:41:19-07:00')
 
     # Make sure paging works
     fake :get, '/accounts?page=2', JSON.parse(accounts_response)
@@ -311,6 +312,8 @@ describe Coinbase::Client do
     r.transfer.code.should == '6H7GYLXZ'
     r.transfer.status.should == 'created'
     r.transfer.btc.should == 1.to_money("BTC")
+    r.transfer.created_at.should == Time.parse('2013-01-28T16:08:58-08:00')
+    r.transfer.payout_date.should == Time.parse('2013-02-01T18:00:00-08:00')
   end
 
   # Sells
@@ -389,11 +392,11 @@ describe Coinbase::Client do
     r.addresses.first.address.address.should == 'moLxGrqWNcnGq4A8Caq8EGP4n9GUGWanj4'
     r.addresses.first.address.callback_url.should == nil
     r.addresses.first.address.label.should == 'My Label'
-    r.addresses.first.address.created_at.should == '2013-05-09T23:07:08-07:00'
+    r.addresses.first.address.created_at.should == Time.parse('2013-05-09T23:07:08-07:00')
     r.addresses[1].address.address.should == 'mwigfecvyG4MZjb6R5jMbmNcs7TkzhUaCj'
     r.addresses[1].address.callback_url.should == nil
     r.addresses[1].address.label.should == nil
-    r.addresses[1].address.created_at.should == '2013-05-09T17:50:37-07:00'
+    r.addresses[1].address.created_at.should == Time.parse('2013-05-09T17:50:37-07:00')
   end
 
   private

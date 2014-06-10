@@ -50,7 +50,8 @@ module Coinbase
       hash = Hashie::Mash.new(JSON.parse(response.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
-      hash
+
+      convert_date_objects(convert_money_objects(hash))
     end
 
     def refresh!

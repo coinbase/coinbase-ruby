@@ -28,14 +28,11 @@ module Coinbase
     # Account
 
     def balance options={}
-      h = get '/account/balance', options
-      h['amount'].to_money(h['currency'])
+      get '/account/balance', options
     end
 
     def accounts options={}
-      accts = get '/accounts', options
-      accts = convert_money_objects(accts)
-      accts
+      get '/accounts', options
     end
 
     def receive_address options={}
@@ -82,17 +79,14 @@ module Coinbase
 
     # Transactions
 
-    def transactions page=1, options ={}
+    def transactions page=1, options={}
       r = get '/transactions', {page: page}.merge(options)
       r.transactions ||= []
-      convert_money_objects(r.transactions)
       r
     end
 
-    def transaction transaction_id
-      r = get "/transactions/#{transaction_id}"
-      convert_money_objects(r.transaction)
-      r
+    def transaction transaction_id, options={}
+      get "/transactions/#{transaction_id}", options
     end
 
     def send_money to, amount, notes=nil, options={}
@@ -102,11 +96,8 @@ module Coinbase
       options[:transaction][:amount_string]         ||= amount.to_s
       options[:transaction][:amount_currency_iso]   ||= amount.currency.iso_code
       options[:transaction][:notes]                 ||= notes
-      r = post '/transactions/send_money', options
-      if amt = r.transaction.amount
-        r.transaction.amount = amt.amount.to_money(amt.currency)
-      end
-      r
+
+      post '/transactions/send_money', options
     end
 
     def request_money from, amount, notes=nil, options={}
@@ -116,11 +107,8 @@ module Coinbase
       options[:transaction][:amount_string]         ||= amount.to_s
       options[:transaction][:amount_currency_iso]   ||= amount.currency.iso_code
       options[:transaction][:notes]                 ||= notes
-      r = post '/transactions/request_money', options
-      if amt = r.transaction.amount
-        r.transaction.amount = amt.amount.to_money(amt.currency)
-      end
-      r
+
+      post '/transactions/request_money', options
     end
 
     def resend_request transaction_id
@@ -151,18 +139,15 @@ module Coinbase
     # Prices
 
     def buy_price qty=1
-      r = get '/prices/buy', {qty: qty}
-      r['amount'].to_money(r['currency'])
+      get '/prices/buy', {qty: qty}
     end
 
     def sell_price qty=1
-      r = get '/prices/sell', {qty: qty}
-      r['amount'].to_money(r['currency'])
+      get '/prices/sell', {qty: qty}
     end
 
     def spot_price currency='USD'
-      r = get '/prices/spot_rate', {currency: currency}
-      r['amount'].to_money(r['currency'])
+      get '/prices/spot_rate', {currency: currency}
     end
 
     def exchange_rates
@@ -172,30 +157,19 @@ module Coinbase
     # Buys
 
     def buy! qty
-      r = post '/buys', {qty: qty}
-      r = convert_money_objects(r)
-      r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
-      r
+      post '/buys', {qty: qty}
     end
 
     # Sells
 
     def sell! qty
-      r = post '/sells', {qty: qty}
-      r = convert_money_objects(r)
-      r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
-      r
+      post '/sells', {qty: qty}
     end
 
     # Transfers
 
     def transfers page=1, options={}
-      r = get '/transfers', {page: page}.merge(options)
-      r = convert_money_objects(r)
-      r.transfers.each do |t|
-        t.transfer.payout_date = Time.parse(t.transfer.payout_date) rescue nil
-      end
-      r
+      get '/transfers', {page: page}.merge(options)
     end
 
     # Wrappers for the main HTTP verbs
@@ -273,18 +247,17 @@ module Coinbase
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
-      hash
+
+      convert_date_objects(convert_money_objects(hash))
     end
 
     class Error < StandardError; end
 
-    private
+    protected
 
     def convert_money_objects obj
       if obj.is_a?(Array)
-        obj.each_with_index do |o, i|
-          obj[i] = convert_money_objects(o)
-        end
+        obj.map! { |o| convert_money_objects(o) }
       elsif obj.is_a?(Hash)
         if obj[:amount] && (obj[:currency] || obj[:currency_iso])
           obj = obj[:amount].to_money((obj[:currency] || obj[:currency_iso]))
@@ -296,5 +269,22 @@ module Coinbase
       end
       obj
     end
+
+    def convert_date_objects obj
+      @@date_keys ||= ['created_at', 'payout_date', 'last_run', 'next_run']
+      if obj.is_a?(Array)
+        obj.map! { |o| convert_date_objects(o) }
+      elsif obj.is_a?(Hash)
+        obj.each do |k,v|
+          if @@date_keys.include? k
+            obj[k] = Time.parse(v) rescue nil
+          else
+            obj[k] = convert_date_objects(v)
+          end
+        end
+      end
+      obj
+    end
+
   end
 end
