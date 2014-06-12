@@ -396,6 +396,15 @@ describe Coinbase::Client do
     r.addresses[1].address.created_at.should == '2013-05-09T17:50:37-07:00'
   end
 
+  it "should throw TimeoutError on 504 response" do
+    FakeWeb.register_uri(:get,
+                         "#{BASE_URI}/addresses?page=4",
+                         body: "<head></head>",
+                         status: ["504", "Gateway Timeout"])
+
+    expect{@c.addresses 4}.to raise_error(TimeoutError)
+  end
+
   private
 
   def fake method, path, body

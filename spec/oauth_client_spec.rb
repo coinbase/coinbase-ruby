@@ -73,6 +73,15 @@ describe Coinbase::Client do
     c.credentials[:refresh_token].should == "new_refresh_token"
   end
 
+  it "should throw TimeoutError on 504 response" do
+    FakeWeb.register_uri(:get,
+                         "#{BASE_URI}/addresses?page=4",
+                         body: "<head></head>",
+                         status: ["504", "Gateway Timeout"])
+
+    expect{@c.addresses 4}.to raise_error(TimeoutError)
+  end
+
   private
 
   def fake method, path, body

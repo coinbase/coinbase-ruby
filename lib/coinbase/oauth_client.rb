@@ -24,6 +24,7 @@ module Coinbase
         :site          => options[:base_uri] || BASE_URI,
         :authorize_url => options[:authorize_url] || AUTHORIZE_URL,
         :token_url     => options[:token_url] || TOKEN_URL,
+        :raise_errors  => false,
         :ssl           => {
                             :verify => true,
                             :cert_store => ::Coinbase::Client.whitelisted_cert_store
@@ -46,6 +47,10 @@ module Coinbase
         request_options = {headers: {"Content-Type" => "application/json"}, body: options.to_json}
       end
       response = oauth_token.request(verb, path, request_options)
+
+      if response.status == 504
+        raise TimeoutError, "Gateway timeout, please try again later"
+      end
 
       hash = Hashie::Mash.new(JSON.parse(response.body))
       raise Error.new(hash.error) if hash.error

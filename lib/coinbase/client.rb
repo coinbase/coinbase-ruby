@@ -270,6 +270,11 @@ module Coinbase
       request_options[:headers] = headers
 
       r = self.class.send(verb, path, request_options.merge(ssl_options))
+
+      if r.code == 504
+        raise TimeoutError, "Gateway timeout, please try again later"
+      end
+
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
