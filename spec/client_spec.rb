@@ -26,20 +26,6 @@ describe Coinbase::Client do
     @c.balance.should == 50.to_money('BTC')
   end
 
-  it "should get a receive address" do
-    fake :get, '/account/receive_address', {address: "muVu2JZo8PbewBHRp6bpqFvVD87qvqEHWA", callback_url: nil}
-    a = @c.receive_address
-    a.address.should == "muVu2JZo8PbewBHRp6bpqFvVD87qvqEHWA"
-    a.callback_url.should == nil
-  end
-
-  it "should generate new receive addresses" do
-    fake :post, '/account/generate_receive_address', {address: "mmxJyTdxHUJUDoptwLHAGxLEd1rAxDJ7EV", callback_url: "http://example.com/callback"}
-    a = @c.generate_receive_address
-    a.address.should == "mmxJyTdxHUJUDoptwLHAGxLEd1rAxDJ7EV"
-    a.callback_url.should == "http://example.com/callback"
-  end
-
   it "should list accounts" do
     accounts_response = <<-eos
       {
@@ -133,6 +119,7 @@ describe Coinbase::Client do
 
     r.success?.should == true
     r.button.name.should == "Order 123"
+    r.button.price.should == "1.23".to_money("USD")
     r.embed_html.should == %[<div class="coinbase-button" data-code="93865b9cae83706ae59220c013bc0afd"></div><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>]
   end
 
@@ -142,6 +129,25 @@ describe Coinbase::Client do
     r = @c.create_order_for_button "93865b9cae83706ae59220c013bc0afd"
     r.order.button.id.should == "93865b9cae83706ae59220c013bc0afd"
     r.order.status.should == "new"
+  end
+
+  # Orders
+
+  it "should get order list" do
+    response = JSON.parse(File.read(File.dirname(__FILE__) + '/fixtures/orders_response.json'))
+    fake :get, '/orders?page=1', response
+    r = @c.orders
+    r.orders.first.order.id.should == 'A7C52JQT'
+    r.orders.first.order.created_at.should == Time.parse("2013-03-11T22:04:37-07:00")
+    r.orders.first.order.total_native.should == "30".to_money("USD")
+  end
+
+  it "should get order list" do
+    response = JSON.parse(File.read(File.dirname(__FILE__) + '/fixtures/order_response.json'))
+    fake :get, '/orders/A7C52JQT', response
+    r = @c.order 'A7C52JQT'
+    r.order.id.should == 'A7C52JQT'
+    r.order.total_native.should == "30".to_money("USD")
   end
 
   # Transactions

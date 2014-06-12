@@ -35,14 +35,6 @@ module Coinbase
       get '/accounts', options
     end
 
-    def receive_address options={}
-      get '/account/receive_address', options
-    end
-
-    def generate_receive_address options={}
-      post '/account/generate_receive_address', options
-    end
-
     # Buttons
 
     def create_button name, price, description=nil, custom=nil, options={}
@@ -75,6 +67,16 @@ module Coinbase
 
     def addresses page=1, options={}
       get '/addresses', {page: page}.merge(options)
+    end
+
+    # Orders
+
+    def orders page=1, options={}
+      get '/orders', {page: page}.merge(options)
+    end
+
+    def order id, options={}
+      get "/orders/#{id}", options
     end
 
     # Transactions
@@ -244,6 +246,7 @@ module Coinbase
       request_options[:headers] = headers
 
       r = self.class.send(verb, path, request_options.merge(ssl_options))
+
       hash = Hashie::Mash.new(JSON.parse(r.body))
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
@@ -261,6 +264,8 @@ module Coinbase
       elsif obj.is_a?(Hash)
         if obj[:amount] && (obj[:currency] || obj[:currency_iso])
           obj = obj[:amount].to_money((obj[:currency] || obj[:currency_iso]))
+        elsif obj[:cents] && (obj[:currency] || obj[:currency_iso])
+          obj = Money.new(obj[:cents], (obj[:currency] || obj[:currency_iso]))
         else
           obj.each do |k,v|
             obj[k] = convert_money_objects(v)
