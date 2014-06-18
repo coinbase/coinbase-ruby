@@ -51,7 +51,7 @@ describe Money::Bank::Coinbase do
   end
 
   def fake method, path, body
-    FakeWeb.register_uri(method, "#{BASE_URI}#{path}", body: body.to_json)
+    FakeWeb.register_uri(method, "#{BASE_URI}#{path}", body: body.to_json, content_type: "application/json")
   end
 
 end

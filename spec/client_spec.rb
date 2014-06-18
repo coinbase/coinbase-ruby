@@ -14,9 +14,9 @@ describe Coinbase::Client do
 
   it "raise errors" do
     fake :get, '/account/balance', {error: "some error"}
-    expect{ @c.balance }.to raise_error(Coinbase::Client::Error, 'some error')
+    expect{ @c.balance }.to raise_error(Coinbase::Error, 'some error')
     fake :get, '/account/balance', {errors: ["some", "error"]}
-    expect{ @c.balance }.to raise_error(Coinbase::Client::Error, 'some, error')
+    expect{ @c.balance }.to raise_error(Coinbase::Error, 'some, error')
   end
 
   # Account
@@ -282,7 +282,7 @@ describe Coinbase::Client do
   end
 
   it "should not let you specify client_id without scopes" do
-    expect{ @c.create_user "newuser@example.com", "newpassword", "the_client_id" }.to raise_error(Coinbase::Client::Error)
+    expect{ @c.create_user "newuser@example.com", "newpassword", "the_client_id" }.to raise_error(Coinbase::Error)
   end
 
   # Prices
@@ -402,13 +402,22 @@ describe Coinbase::Client do
                          body: "<head></head>",
                          status: ["504", "Gateway Timeout"])
 
-    expect{@c.addresses 4}.to raise_error(TimeoutError)
+    expect{@c.addresses 4}.to raise_error(Coinbase::TimeoutError)
+  end
+
+  it "should throw Error on wrong content type" do
+    FakeWeb.register_uri(:get,
+                         "#{BASE_URI}/addresses?page=5",
+                         body: "<head></head>",
+                         content_type: "text/html")
+
+    expect{@c.addresses 5}.to raise_error(Coinbase::Error)
   end
 
   private
 
   def fake method, path, body
-    FakeWeb.register_uri(method, "#{BASE_URI}#{path}", body: body.to_json)
+    FakeWeb.register_uri(method, "#{BASE_URI}#{path}", body: body.to_json, content_type: "application/json")
   end
 
 end

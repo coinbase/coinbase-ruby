@@ -48,13 +48,31 @@ module Coinbase
       end
       response = oauth_token.request(verb, path, request_options)
 
-      if response.status == 504
+      case response.status
+      when 504
         raise TimeoutError, "Gateway timeout, please try again later"
+      when 500..600
+        raise ServerError, "Server error: (#{r.code})"
+      when 401
+        raise UnauthorizedError
+      when 404
+        raise NotFoundError
+      end
+
+      if !response.headers['content-type'].downcase.include? 'json'
+        raise Error, "Unrecognized content type #{response.headers['content-type']}"
       end
 
       hash = Hashie::Mash.new(JSON.parse(response.body))
-      raise Error.new(hash.error) if hash.error
-      raise Error.new(hash.errors.join(", ")) if hash.errors
+
+      if hash.error
+        raise Error, hash.error
+      end
+
+      if hash.errors
+        raise Error, hash.errors.join(", ")
+      end
+
       hash
     end
 
