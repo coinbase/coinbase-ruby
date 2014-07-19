@@ -24,6 +24,7 @@ module Coinbase
         :site          => options[:base_uri] || BASE_URI,
         :authorize_url => options[:authorize_url] || AUTHORIZE_URL,
         :token_url     => options[:token_url] || TOKEN_URL,
+        :raise_errors  => false,
         :ssl           => {
                             :verify => true,
                             :cert_store => ::Coinbase::Client.whitelisted_cert_store
@@ -47,9 +48,30 @@ module Coinbase
       end
       response = oauth_token.request(verb, path, request_options)
 
+      case response.status
+      when 504
+        raise TimeoutError, "Gateway timeout, please try again later"
+      when 500..600
+        raise ServerError, "Server error: (#{r.code})"
+      when 401
+        raise UnauthorizedError
+      when 404
+        raise NotFoundError
+      end
+
+      if !response.headers['content-type'].downcase.include? 'json'
+        raise Error, "Unrecognized content type #{response.headers['content-type']}"
+      end
+
       hash = Hashie::Mash.new(JSON.parse(response.body))
-      raise Error.new(hash.error) if hash.error
-      raise Error.new(hash.errors.join(", ")) if hash.errors
+
+      if hash.error
+        raise Error, hash.error
+      end
+
+      if hash.errors
+        raise Error, hash.errors.join(", ")
+      end
 
       convert_date_objects(convert_money_objects(hash))
     end

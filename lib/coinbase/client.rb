@@ -247,16 +247,35 @@ module Coinbase
 
       r = self.class.send(verb, path, request_options.merge(ssl_options))
 
+      case r.code
+      when 504
+        raise TimeoutError, "Gateway timeout, please try again later"
+      when 500..600
+        raise ServerError, "Server error: (#{r.code})"
+      when 401
+        raise UnauthorizedError
+      when 404
+        raise NotFoundError
+      end
+
+      if !r.headers['content-type'].downcase.include? 'json'
+        raise Error, "Unrecognized content type #{r.headers['content-type']}"
+      end
+
       hash = Hashie::Mash.new(JSON.parse(r.body))
-      raise Error.new(hash.error) if hash.error
-      raise Error.new(hash.errors.join(", ")) if hash.errors
+
+      if hash.error
+        raise Error, hash.error
+      end
+
+      if hash.errors
+        raise Error, hash.errors.join(", ")
+      end
 
       convert_date_objects(convert_money_objects(hash))
     end
 
-    class Error < StandardError; end
-
-    protected
+    private
 
     def convert_money_objects obj
       if obj.is_a?(Array)
