@@ -42,6 +42,10 @@ module Coinbase
       get '/account/receive_address', options
     end
 
+    def contacts options={}
+      get '/contacts', options
+    end
+
     def generate_receive_address options={}
       post '/account/generate_receive_address', options
     end
