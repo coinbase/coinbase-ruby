@@ -38,6 +38,10 @@ module Coinbase
       accts
     end
 
+    def contacts page=1, options={}
+      get '/contacts', {page: page}.merge(options)
+    end
+
     def receive_address options={}
       get '/account/receive_address', options
     end
