@@ -175,8 +175,8 @@ module Coinbase
 
     # Buys
 
-    def buy! qty
-      r = post '/buys', {qty: qty}
+    def buy! qty, options = {}
+      r = post '/buys', options.merge({qty: qty})
       r = convert_money_objects(r)
       r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
       r
