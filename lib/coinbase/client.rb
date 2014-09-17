@@ -35,6 +35,10 @@ module Coinbase
       get '/accounts', options
     end
 
+    def contacts page=1, options={}
+      get '/contacts', {page: page}.merge(options)
+    end
+
     # Buttons
 
     def create_button name, price, description=nil, custom=nil, options={}

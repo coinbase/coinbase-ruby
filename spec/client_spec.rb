@@ -423,6 +423,34 @@ describe Coinbase::Client do
     expect{@c.addresses 5}.to raise_error(Coinbase::Error)
   end
 
+  it 'should read contacts json' do
+    raw_contacts = <<-eos
+      {"contacts":
+        [
+          {"contact":
+            {"email": "bit@coin.org"}
+          },
+          {"contact":
+            {"email": "alt@coin.org"}
+          }
+        ],
+        "total_count": 2,
+        "num_pages": 1,
+        "current_page": 1
+      }
+    eos
+
+    fake :get, '/contacts?page=1', JSON.parse(raw_contacts)
+
+    r = @c.contacts
+    r.total_count.should == 2
+    r.num_pages.should == 1
+    r.current_page.should == 1
+    r.contacts.size.should == 2
+    r.contacts.first.contact.email.should == 'bit@coin.org'
+    r.contacts[1].contact.email.should == 'alt@coin.org'
+  end
+
   private
 
   def fake method, path, body
