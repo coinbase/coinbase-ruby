@@ -59,7 +59,12 @@ coinbase.balance.to_s
 => 200.35300000 # BTC amount
 ```
 
-[Money objects](https://github.com/RubyMoney/money) are returned for most amounts dealing with currency.  You can call `to_d`, `format`, or perform math operations on money objects.
+#### Important note on refresh tokens
+
+If :expires_at is included with the user credentials, the client will automatically refresh the credentials when expired. There are two important things to consider when taking advantage of this functionality:
+
+1. You must remember to persist the credentials after you're finished with a client instance, since they may have changed. You can access the most up-to-date credentials by calling .credentials on the client instance. You should do this in an ensure block so that credentials are persisted even after a call that throws an error.
+2. In a concurrent environment, you MUST synchronize the use of a given set of credentials. If two threads use the same refresh token, the latter one will fail and, worse, you may persist the old refresh token over the new refresh token and lose all access to the given account.
 
 ## Examples
 
