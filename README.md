@@ -46,6 +46,8 @@ coinbase = Coinbase::OAuthClient.new(ENV['COINBASE_CLIENT_ID'], ENV['COINBASE_CL
 
 Notice here that we did not hard code the API keys into our codebase, but set it in an environment variable instead. This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
 
+Including the `expired_at` parameter is critical if your application needs to use the `access_token` and `refresh_token` again, otherwise important methods such as `.refresh!` will throw errors.
+
 Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
 
 ```ruby
