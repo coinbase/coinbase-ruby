@@ -10,7 +10,7 @@ module Coinbase
   class Client
     include HTTParty
 
-    BASE_URI = 'https://coinbase.com/api/v1'
+    BASE_URI = 'https://api.coinbase.com/v1'
 
     def initialize(api_key='', api_secret='', options={})
       @api_key = api_key
@@ -162,8 +162,8 @@ module Coinbase
 
     # Buys
 
-    def buy! qty
-      post '/buys', {qty: qty}
+    def buy! qty, options = {}
+      post '/buys', options.merge({qty: qty})
     end
 
     # Sells

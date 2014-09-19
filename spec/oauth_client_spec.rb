@@ -9,7 +9,7 @@ describe Coinbase::Client do
     @credentials = {
       :token => 'access_token',
       :refresh_token => 'refresh_token',
-      :expires_at => Time.now.to_i + 100
+      :expires_at => Time.now.to_i + 400
     }
     @client_options = {
       base_uri: BASE_URI,

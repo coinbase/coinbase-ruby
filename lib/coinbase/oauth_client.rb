@@ -5,6 +5,7 @@ module Coinbase
 
     AUTHORIZE_URL = 'https://coinbase.com/oauth/authorize'
     TOKEN_URL     = 'https://coinbase.com/oauth/token'
+    FIVE_MINUTES  = 300
 
     # Initializes a Coinbase Client using OAuth 2.0 credentials
     #
@@ -33,6 +34,11 @@ module Coinbase
       @oauth_client = OAuth2::Client.new(client_id, client_secret, client_opts)
       token_hash = user_credentials.dup
       token_hash[:access_token] ||= token_hash[:token]
+
+      # Fudge expiry to avoid race conditions
+      token_hash[:expires_in] = token_hash[:expires_in].to_i - FIVE_MINUTES if token_hash[:expires_in]
+      token_hash[:expires_at] = token_hash[:expires_at].to_i - FIVE_MINUTES if token_hash[:expires_at]
+
       token_hash.delete :expires
       raise "No access token provided" unless token_hash[:access_token]
       @oauth_token = OAuth2::AccessToken.from_hash(@oauth_client, token_hash)
