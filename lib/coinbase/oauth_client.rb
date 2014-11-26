@@ -58,7 +58,7 @@ module Coinbase
       when 504
         raise TimeoutError, "Gateway timeout, please try again later"
       when 500..600
-        raise ServerError, "Server error: (#{response.code})"
+        raise ServerError, "Server error: (#{response.status})"
       when 401
         raise UnauthorizedError
       when 404
