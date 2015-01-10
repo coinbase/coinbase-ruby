@@ -334,6 +334,23 @@ describe Coinbase::Client do
     r.transfer.btc.should == 1.to_money("BTC")
   end
 
+  # Commit transfer (pending buy or sell)
+
+  it "should let you commit a pending order" do
+    buy_response = {"success" => true, "transfer"=>{"id"=>"12a34567bcd891011ef00000d", "created_at"=>"2015-01-12T16:25:14-08:00", "fees"=>{"coinbase"=>"#<Money fractional:254 currency:USD>", "bank"=>"#<Money fractional:15 currency:USD>"}, "type"=>"Buy", "status"=>"pending"}}
+    fake :post, '/buys', buy_response
+    pb = @c.buy! 1, commit: false
+    pb.transfer.status.should == "pending"
+    id = pb.transfer.id
+
+    commit_response = {"success"=>true, "transfer"=>{"_type"=>"AchDebit", "code"=>"6H7GYLXZ", "created_at"=>"2013-01-28T16:08:58-08:00", "fees"=>{"coinbase"=>{"cents"=>14, "currency_iso"=>"USD"}, "bank"=>{"cents"=>15, "currency_iso"=>"USD"}}, "status"=>"created", "payout_date"=>"2013-02-01T18:00:00-08:00", "btc"=>{"amount"=>"1.00000000", "currency"=>"BTC"}, "subtotal"=>{"amount"=>"13.55", "currency"=>"USD"}, "total"=>{"amount"=>"13.84", "currency"=>"USD"}}}
+    fake :post, "/transfers/#{id}/commit", commit_response
+    r = @c.commit_transfer! id
+    r.success?.should == true
+    r.transfer.status.should == 'created'
+    r.transfer.btc.should == 1.to_money("BTC")
+  end
+
   # Transfers
 
   it "should get recent transfers" do
