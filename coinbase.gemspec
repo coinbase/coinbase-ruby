@@ -28,7 +28,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency "httparty", ">= 0.8.3"
   gem.add_dependency "multi_json", ">= 1.3.4"
   gem.add_dependency "money", "~> 6.0"
-  gem.add_dependency "monetize", "~> 0.3.0"
+  gem.add_dependency "monetize", "~> 1.0"
   gem.add_dependency "hashie", ">= 1.2.0"
   gem.add_dependency "oauth2", "~> 1.0"
 end
