@@ -172,6 +172,12 @@ module Coinbase
       post '/sells', {qty: qty}
     end
 
+    # Commit transfer (pending buy or sell)
+
+    def commit_transfer! id
+      post "/transfers/#{id}/commit"
+    end
+
     # Transfers
 
     def transfers page=1, options={}
