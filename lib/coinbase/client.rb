@@ -168,8 +168,8 @@ module Coinbase
 
     # Sells
 
-    def sell! qty
-      post '/sells', {qty: qty}
+    def sell! qty, options = {}
+      post '/sells', options.merge({qty: qty})
     end
 
     # Commit transfer (pending buy or sell)
