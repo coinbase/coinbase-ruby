@@ -2,7 +2,7 @@
 
 An easy way to buy, send, and accept [bitcoin](http://en.wikipedia.org/wiki/Bitcoin) through the [Coinbase API](https://coinbase.com/docs/api/overview).
 
-This gem is a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc). It supports both the the [api key + secret authentication method](https://coinbase.com/docs/api/authentication) as well as OAuth 2.0 for performing actions on other people's account.
+This gem is a wrapper around the [Coinbase JSON API](https://developers.coinbase.com/api). It supports both the the [api key + secret authentication method](https://coinbase.com/docs/api/authentication) as well as OAuth 2.0 for performing actions on other people's account.
 
 ## Installation
 
@@ -32,7 +32,7 @@ coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRE
 
 ### OAuth 2.0 Authentication (for accessing others' accounts)
 
-Start by [creating a new OAuth 2.0 application](https://coinbase.com/oauth/applications)
+Start by [creating a new OAuth 2.0 application](https://coinbase.com/settings/api)
 
 ```ruby
 # Obtaining the OAuth credentials is outside the scope of this gem
@@ -46,7 +46,7 @@ coinbase = Coinbase::OAuthClient.new(ENV['COINBASE_CLIENT_ID'], ENV['COINBASE_CL
 
 Notice here that we did not hard code the API keys into our codebase, but set it in an environment variable instead. This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
 
-Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://coinbase.com/api/doc).  For example:
+Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://developers.coinbase.com/api).  For example:
 
 ```ruby
 coinbase.balance
@@ -244,7 +244,7 @@ r.transfers.collect{|t| t.transfer.total.amount }
 
 This will create the code for a payment button (and modal window) that you can use to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
 
-The method signature is `def create_button name, price, description=nil, custom=nil, options={}`.  The `custom` param will get passed through in [callbacks](https://coinbase.com/docs/merchant_tools/callbacks) to your site.  The list of valid `options` [are described here](https://coinbase.com/api/doc/1.0/buttons/create.html).
+The method signature is `def create_button name, price, description=nil, custom=nil, options={}`.  The `custom` param will get passed through in [callbacks](https://coinbase.com/docs/merchant_tools/callbacks) to your site.  The list of valid `options` [are described here](https://developers.coinbase.com/api#create-a-new-payment-button-page-or-iframe).
 
 ```ruby
 r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
@@ -256,7 +256,7 @@ r.embed_html
 
 ### Create an order for a button
 
-This will generate an order associated with a button. You can read [more about creating an order for a button here](https://coinbase.com/api/doc/1.0/buttons/create_order.html).
+This will generate an order associated with a button. You can read [more about creating an order for a button here](https://developers.coinbase.com/api#create-an-order).
 
 ```ruby
 r = coinbase.create_order_for_button "93865b9cae83706ae59220c013bc0afd"
@@ -275,7 +275,7 @@ r.receive_address
 
 A receive address is returned also in case you need to send the new user a payment right away.
 
-You can optionally pass in a client_id parameter that corresponds to your OAuth2 application and an array of permissions. When these are provided, the generated user will automatically have the permissions you’ve specified granted for your application. See the [API Reference](https://coinbase.com/api/doc/1.0/users/create.html) for more details.
+You can optionally pass in a client_id parameter that corresponds to your OAuth2 application and an array of permissions. When these are provided, the generated user will automatically have the permissions you’ve specified granted for your application. See the [API Reference](https://developers.coinbase.com/api#create-a-new-user-for-oauth2-application) for more details.
 
 ```ruby
 r = coinbase.create_user "newuser@example.com", "some password", client_id, ['transactions', 'buy', 'sell']
@@ -322,9 +322,9 @@ cb_bank.exchange_with(Money.new(10000, :USD), :BTC) # '0.15310000'.to_money(:BTC
 
 ## Adding new methods
 
-You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://coinbase.com/api/doc).
+You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://developers.coinbase.com/api).
 
-If there are any methods listed in the [API Reference](https://coinbase.com/api/doc) that haven't been added to the gem yet, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
+If there are any methods listed in the [API Reference](https://developers.coinbase.com/api) that haven't been added to the gem yet, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
 
 ```ruby
 coinbase.get('/account/balance').to_hash
