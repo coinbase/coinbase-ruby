@@ -3,9 +3,10 @@ require 'oauth2'
 module Coinbase
   class OAuthClient < Client
 
-    AUTHORIZE_URL = 'https://coinbase.com/oauth/authorize'
-    TOKEN_URL     = 'https://coinbase.com/oauth/token'
-    FIVE_MINUTES  = 300
+    OAUTH_SITE     = 'https://coinbase.com'
+    AUTHORIZE_PATH = '/oauth/authorize'
+    TOKEN_PATH     = '/oauth/token'
+    FIVE_MINUTES   = 300
 
     # Initializes a Coinbase Client using OAuth 2.0 credentials
     #
@@ -21,10 +22,15 @@ module Coinbase
     # Please note access tokens will be automatically refreshed when expired
     # Use the credentials method when finished with the client to retrieve up-to-date credentials
     def initialize(client_id, client_secret, user_credentials, options={})
+      if options[:sandbox]
+        options[:site] = 'https://sandbox.coinbase.com'
+        options[:base_uri] = 'https://api.sandbox.coinbase.com/v1'
+      end
+      site = options[:site] || OAUTH_SITE
       client_opts = {
         :site          => options[:base_uri] || BASE_URI,
-        :authorize_url => options[:authorize_url] || AUTHORIZE_URL,
-        :token_url     => options[:token_url] || TOKEN_URL,
+        :authorize_url => options[:authorize_url] || "#{site}#{AUTHORIZE_PATH}",
+        :token_url     => options[:token_url] || "#{site}#{TOKEN_PATH}",
         :ssl           => {
                             :verify => true,
                             :cert_store => ::Coinbase::Client.whitelisted_cert_store
