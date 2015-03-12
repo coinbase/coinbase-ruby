@@ -141,6 +141,10 @@ module Coinbase
 
     # Users
 
+    def current_user
+      get '/users/self'
+    end
+
     def create_user email, password=nil, client_id=nil, scopes=nil
       password ||= SecureRandom.urlsafe_base64(12)
       options = {user: {email: email, password: password}}

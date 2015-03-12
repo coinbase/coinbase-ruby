@@ -248,6 +248,15 @@ describe Coinbase::Client do
 
   # Users
 
+  it "should let you get the current user details" do
+    response = {"user" => {"id" => "512db383f8182bd24d000001", "name" => "User One", "email" => "user1@example.com"}}
+    fake :get, "/users/self", response
+    r = @c.current_user
+    r.user.id.should == "512db383f8182bd24d000001"
+    r.user.name.should == "User One"
+    r.user.email.should == "user1@example.com"
+  end
+
   it "should let you create users" do
     response = {"success"=>true, "user"=>{"id"=>"501a3d22f8182b2754000011", "name"=>"New User", "email"=>"newuser@example.com", "receive_address"=>"mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"}}
     fake :post, "/users", response
