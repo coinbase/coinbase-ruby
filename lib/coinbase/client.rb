@@ -264,23 +264,41 @@ module Coinbase
 
       signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @api_secret, hmac_message)
 
-      headers = {
+      headers = build_headers({
         'ACCESS_KEY' => @api_key,
         'ACCESS_SIGNATURE' => signature,
         'ACCESS_NONCE' => nonce.to_s,
         "Content-Type" => "application/json",
-      }
+      }, options)
 
       request_options[:headers] = headers
 
       r = self.class.send(verb, path, request_options.merge(ssl_options))
-      hash = Hashie::Mash.new(JSON.parse(r.body))
+      handle_response(r)
+    end
+
+    class Error < StandardError; end
+    class TwoFactorAuthError < StandardError; end
+
+    protected
+
+    def build_headers headers, options
+      if options[:token_2fa] && options[:token_2fa].to_i > 0
+        headers['CB-2FA-Token'] = options[:token_2fa]
+        options.delete(:token_2fa)
+      end
+      headers
+    end
+
+    def handle_response res
+      status = res.respond_to?(:code) ? res.code : res.status
+      hash = Hashie::Mash.new(JSON.parse(res.body))
+      # Handle 2FA generically
+      raise TwoFactorAuthError.new(hash.error) if status === 402
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
       hash
     end
-
-    class Error < StandardError; end
 
     private
 

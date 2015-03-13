@@ -170,31 +170,44 @@ describe Coinbase::Client do
     r.transactions.should_not be_nil
   end
 
-  it "should send money in BTC" do
-    response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
-    fake :post, '/transactions/send_money', response
-    r = @c.send_money "user1@example.com", 1.2345, "Sample transaction for you"
+  context "send money" do
 
-    # Ensure BTC is assumed to be the default currency
-    post_params = JSON.parse(FakeWeb.last_request.body)
-    post_params['transaction']['amount_currency_iso'].should == "BTC"
-    post_params['transaction']['amount_string'].should == "1.23450000"
+    it "should allow sending BTC" do
+      response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
+      fake :post, '/transactions/send_money', response
+      r = @c.send_money "user1@example.com", 1.2345, "Sample transaction for you"
 
-    r.success.should == true
-    r.transaction.id.should == '501a1791f8182b2071000087'
-  end
+      # Ensure BTC is assumed to be the default currency
+      post_params = JSON.parse(FakeWeb.last_request.body)
+      post_params['transaction']['amount_currency_iso'].should == "BTC"
+      post_params['transaction']['amount_string'].should == "1.23450000"
 
-  it "should send money in USD" do
-    response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
-    fake :post, '/transactions/send_money', response
-    r = @c.send_money "user1@example.com", 500.to_money("USD"), "Sample transaction for you"
+      r.success.should == true
+      r.transaction.id.should == '501a1791f8182b2071000087'
+    end
 
-    post_params = JSON.parse(FakeWeb.last_request.body)
-    post_params['transaction']['amount_currency_iso'].should == "USD"
-    post_params['transaction']['amount_string'].should == "500.00"
+    it "should allow sending USD" do
+      response = {"success"=>true, "transaction"=>{"id"=>"501a1791f8182b2071000087", "created_at"=>"2012-08-01T23:00:49-07:00", "notes"=>"Sample transaction for you!", "amount"=>{"amount"=>"-1.23400000", "currency"=>"BTC"}, "request"=>false, "status"=>"pending", "sender"=>{"id"=>"5011f33df8182b142400000e", "name"=>"User Two", "email"=>"user2@example.com"}, "recipient"=>{"id"=>"5011f33df8182b142400000a", "name"=>"User One", "email"=>"user1@example.com"}}}
+      fake :post, '/transactions/send_money', response
+      r = @c.send_money "user1@example.com", 500.to_money("USD"), "Sample transaction for you"
 
-    r.success.should == true
-    r.transaction.id.should == '501a1791f8182b2071000087'
+      post_params = JSON.parse(FakeWeb.last_request.body)
+      post_params['transaction']['amount_currency_iso'].should == "USD"
+      post_params['transaction']['amount_string'].should == "500.00"
+
+      r.success.should == true
+      r.transaction.id.should == '501a1791f8182b2071000087'
+    end
+
+    it "should handle 2FA challenge" do
+      response = {success: false, error: "Can i haz 2FA?"}
+      fake :post, '/transactions/send_money', response, {status: ["402", "Payment Required"]}
+      expect {@c.send_money "user1@example.com", 1.2345, "Sample transaction for you"}.to raise_error(Coinbase::Client::TwoFactorAuthError, "Can i haz 2FA?")
+    end
+
+    # FIXME we can't test this using fakeweb: we need to test the header gets set
+    it "should allow sending the 2FA code"
+
   end
 
   it "should request money" do
@@ -426,8 +439,8 @@ describe Coinbase::Client do
 
   private
 
-  def fake method, path, body
-    FakeWeb.register_uri(method, "#{BASE_URI}#{path}", body: body.to_json)
+  def fake method, path, body, options={}
+    FakeWeb.register_uri(method, "#{BASE_URI}#{path}", {body: body.to_json}.merge(options))
   end
 
 end
