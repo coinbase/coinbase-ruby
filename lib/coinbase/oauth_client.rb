@@ -34,7 +34,8 @@ module Coinbase
         :ssl           => {
                             :verify => true,
                             :cert_store => ::Coinbase::Client.whitelisted_cert_store
-                          }
+                          },
+        :raise_errors  => false
       }
       @oauth_client = OAuth2::Client.new(client_id, client_secret, client_opts)
       token_hash = user_credentials.dup
@@ -55,14 +56,11 @@ module Coinbase
       if [:get, :delete].include? verb
         request_options = {params: options}
       else
-        request_options = {headers: {"Content-Type" => "application/json"}, body: options.to_json}
+        request_options = {headers: build_headers({"Content-Type" => "application/json"}, options), body: options.to_json}
       end
       response = oauth_token.request(verb, path, request_options)
 
-      hash = Hashie::Mash.new(JSON.parse(response.body))
-      raise Error.new(hash.error) if hash.error
-      raise Error.new(hash.errors.join(", ")) if hash.errors
-      hash
+      handle_response(response)
     end
 
     def refresh!
