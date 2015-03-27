@@ -59,6 +59,18 @@ coinbase.balance.to_s
 => 200.35300000 # BTC amount
 ```
 
+#### Two factor authentication
+
+`send_money` endpoint requires 2FA token in certain situations (read more [here](https://developers.coinbase.com/docs/wallet/permissions#two-factor-authentication)). Specific exception is thrown when this is required:
+
+```ruby
+begin
+    client.send_money('test@test.com', '1', 'your message', token_2fa: params[:token_2fa])
+rescue Coinbase::Client::TwoFactorAuthError
+    # Show 2FA dialog to user
+end
+```
+
 #### Important note on refresh tokens
 
 If :expires_at is included with the user credentials, the client will automatically refresh the credentials when expired. There are two important things to consider when taking advantage of this functionality:
