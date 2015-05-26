@@ -36,7 +36,7 @@ Start by [creating a new OAuth 2.0 application](https://coinbase.com/settings/ap
 
 Then your app will need to go through [OAuth2 authentication](https://developers.coinbase.com/docs/wallet/authentication#oauth2-authentication) to obtain the user credentials shown in the hash below. You may want to start with an OAuth 2 client library in the language of your choice to complete this step.
 
-You can also create a [developer access token](https://www.coinbase.com/settings/api) to quickly get started when you first create the OAuth 2 app. In this case you can leave the refresh_token and expires_at blank.
+You can also create a [developer access token](https://www.coinbase.com/settings/api) to quickly get started by clicking your app and then "Create developer access token". When using this you can leave the refresh_token and expires_at blank.
 
 ```ruby
 user_credentials = {
