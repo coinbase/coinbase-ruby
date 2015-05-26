@@ -32,10 +32,9 @@ coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRE
 
 ### OAuth 2.0 Authentication (for accessing others' accounts)
 
-Start by [creating a new OAuth 2.0 application](https://coinbase.com/settings/api)
+Start by [creating a new OAuth 2.0 application](https://coinbase.com/settings/api). Then your app will need to go through [OAuth2 authentication](https://developers.coinbase.com/docs/wallet/authentication#oauth2-authentication) to obtain the user credentials shown in the hash below. You may want to start with an OAuth 2 client library in the language of your choice to complete this step.
 
 ```ruby
-# Obtaining the OAuth credentials is outside the scope of this gem
 user_credentials = {
 	:access_token => 'access_token',
 	:refresh_token => 'refresh_token',
