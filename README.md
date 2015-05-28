@@ -34,7 +34,7 @@ coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRE
 
 Start by [creating a new OAuth 2.0 application](https://coinbase.com/settings/api).
 
-Then your app will need to go through [OAuth2 authentication](https://developers.coinbase.com/docs/wallet/authentication#oauth2-authentication) to obtain the user credentials shown in the hash below. You may want to start with an OAuth 2 client library in the language of your choice to complete this step.
+Then your app will need to go through [OAuth2 authentication](https://developers.coinbase.com/docs/wallet/authentication#oauth2-authentication) to obtain the user credentials shown in the hash below. If you're developing a Rails or Rack web application, the excellent [omniauth](https://github.com/intridea/omniauth) gem makes this step easy. We maintain an official omniauth strategy [here](https://github.com/coinbase/omniauth-coinbase) as well as a Rails [example application](https://github.com/coinbase/coinbase-oauth-rails-example) demonstrating its use.
 
 You can also create a [developer access token](https://www.coinbase.com/settings/api) to quickly get started by clicking your app and then "Create developer access token". When using this you can leave the refresh_token and expires_at blank.
 
