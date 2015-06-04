@@ -139,6 +139,12 @@ module Coinbase
       put "/transactions/#{transaction_id}/complete_request"
     end
 
+    # Orders
+
+    def order order_id, account_id = ''
+      get "/orders/#{order_id}/#{account_id}"
+    end
+
     # Users
 
     def current_user
