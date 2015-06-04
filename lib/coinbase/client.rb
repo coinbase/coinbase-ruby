@@ -24,6 +24,7 @@ module Coinbase
       else
         @base_uri = BASE_URI
       end
+      options.delete(:sandbox)
       options[:base_uri] = @base_uri
       options[:format]   ||= :json
 
