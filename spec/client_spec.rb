@@ -259,6 +259,18 @@ describe Coinbase::Client do
     r.success.should == true
   end
 
+  # Orders
+
+  it "should show an order" do
+    id = "A7C52JQT"
+    status = "completed"
+    fake :get, "/orders/#{id}/", JSON.parse(File.read(File.dirname(__FILE__) + '/fixtures/example_order.json'))
+
+    r = @c.order(id)
+    r.order.id.should == id
+    r.order.status.should == status
+  end
+
   # Users
 
   it "should let you get the current user details" do
