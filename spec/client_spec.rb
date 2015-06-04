@@ -5,9 +5,16 @@ require 'coinbase'
 describe Coinbase::Client do
   BASE_URI = 'http://fake.com/api/v1' # switching to http (instead of https) seems to help FakeWeb
 
-  before :all do
+  before :each do
     @c = Coinbase::Client.new 'api key', 'api secret', {base_uri: BASE_URI}
     FakeWeb.allow_net_connect = false
+  end
+
+  # Sandbox
+
+  it "sets sandbox properly" do
+    c = Coinbase::Client.new 'api key', 'api secret', {sandbox: true}
+    c.instance_variable_get(:@base_uri).should == Coinbase::Client::SANDBOX_BASE_URI
   end
 
   # Auth and Errors
@@ -257,6 +264,18 @@ describe Coinbase::Client do
     fake :put, "/transactions/501a3554f8182b2754000003/complete_request", response
     r = @c.complete_request '501a3554f8182b2754000003'
     r.success.should == true
+  end
+
+  # Orders
+
+  it "should show an order" do
+    id = "A7C52JQT"
+    status = "completed"
+    fake :get, "/orders/#{id}/", JSON.parse(File.read(File.dirname(__FILE__) + '/fixtures/example_order.json'))
+
+    r = @c.order(id)
+    r.order.id.should == id
+    r.order.status.should == status
   end
 
   # Users
