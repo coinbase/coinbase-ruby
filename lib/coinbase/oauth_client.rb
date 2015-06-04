@@ -23,9 +23,10 @@ module Coinbase
     # Use the credentials method when finished with the client to retrieve up-to-date credentials
     def initialize(client_id, client_secret, user_credentials, options={})
       if options[:sandbox]
+        options[:base_uri] = SANDBOX_BASE_URI
         options[:site] = 'https://sandbox.coinbase.com'
-        options[:base_uri] = 'https://api.sandbox.coinbase.com/v1'
       end
+
       site = options[:site] || OAUTH_SITE
       client_opts = {
         :site          => options[:base_uri] || BASE_URI,
