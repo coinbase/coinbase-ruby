@@ -5,9 +5,16 @@ require 'coinbase'
 describe Coinbase::Client do
   BASE_URI = 'http://fake.com/api/v1' # switching to http (instead of https) seems to help FakeWeb
 
-  before :all do
+  before :each do
     @c = Coinbase::Client.new 'api key', 'api secret', {base_uri: BASE_URI}
     FakeWeb.allow_net_connect = false
+  end
+
+  # Sandbox
+
+  it "sets sandbox properly" do
+    c = Coinbase::Client.new 'api key', 'api secret', {sandbox: true}
+    c.instance_variable_get(:@base_uri).should == Coinbase::Client::SANDBOX_BASE_URI
   end
 
   # Auth and Errors
