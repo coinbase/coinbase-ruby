@@ -11,15 +11,22 @@ module Coinbase
     include HTTParty
 
     BASE_URI = 'https://api.coinbase.com/v1'
+    SANDBOX_BASE_URI = 'https://api.sandbox.coinbase.com/v1'
 
     def initialize(api_key='', api_secret='', options={})
       @api_key = api_key
       @api_secret = api_secret
 
-      # defaults
-      options[:base_uri] ||= BASE_URI
-      @base_uri = options[:base_uri]
+      if options[:base_uri]
+        @base_uri = options[:base_uri]
+      elsif options.delete(:sandbox)
+        @base_uri = SANDBOX_BASE_URI
+      else
+        @base_uri = BASE_URI
+      end
+      options[:base_uri] = @base_uri
       options[:format]   ||= :json
+
       options.each do |k,v|
         self.class.send k, v
       end
