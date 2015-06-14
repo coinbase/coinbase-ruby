@@ -372,6 +372,17 @@ describe Coinbase::Client do
     FakeWeb.last_request.path.should include("page=2")
   end
 
+  it "should get transfer detail" do
+    response = {"transfer" => {"type" => "Buy", "code" => "QPCUCZHR", "created_at" => "2013-02-27T23:28:18-08:00", "fees" => {"coinbase" => {"cents" => 14, "currency_iso" => "USD"}, "bank" => {"cents" => 15, "currency_iso" => "USD"} }, "payout_date" => "2013-03-05T18:00:00-08:00", "transaction_id" => "5011f33df8182b142400000e", "status" => "Pending", "btc" => {"amount" => "1.00000000", "currency" => "BTC"}, "subtotal" => {"amount" => "13.55", "currency" => "USD"}, "total" => {"amount" => "13.84", "currency" => "USD"}, "description" => "Paid for with $13.84 from Test xxxxx3111."} }
+    fake :get, "/transfers/5011f33df8182b142400000e", response
+    r = @c.transfer "5011f33df8182b142400000e"
+    t = r.transfer
+    t.type.should == "Buy"
+    t.code.should == "QPCUCZHR"
+    t.status.should == "Pending"
+    t.btc.should == 1.to_money("BTC")
+  end
+
   # Addresses
 
   it 'should read addresses json' do

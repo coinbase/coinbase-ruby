@@ -206,6 +206,13 @@ module Coinbase
       r
     end
 
+    def transfer transfer_id
+      r = get "/transfers/#{transfer_id}"
+      convert_money_objects(r.transfer)
+      r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
+      r
+    end
+
     # Wrappers for the main HTTP verbs
 
     def get(path, options={})
