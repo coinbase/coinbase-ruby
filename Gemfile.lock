@@ -1,0 +1,67 @@
+PATH
+  remote: .
+  specs:
+    coinbase-wallet (4.0.0)
+      bigdecimal
+      em-http-request
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    addressable (2.3.8)
+    bigdecimal (1.2.7)
+    coderay (1.1.0)
+    cookiejar (0.3.2)
+    crack (0.4.2)
+      safe_yaml (~> 1.0.0)
+    diff-lcs (1.2.5)
+    em-http-request (1.1.2)
+      addressable (>= 2.3.4)
+      cookiejar
+      em-socksify (>= 0.3)
+      eventmachine (>= 1.0.3)
+      http_parser.rb (>= 0.6.0)
+    em-socksify (0.3.0)
+      eventmachine (>= 1.0.0.beta.4)
+    eventmachine (1.0.7)
+    http_parser.rb (0.6.0)
+    method_source (0.8.2)
+    pry (0.10.1)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    rake (10.4.2)
+    rspec (3.3.0)
+      rspec-core (~> 3.3.0)
+      rspec-expectations (~> 3.3.0)
+      rspec-mocks (~> 3.3.0)
+    rspec-core (3.3.1)
+      rspec-support (~> 3.3.0)
+    rspec-expectations (3.3.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.3.0)
+    rspec-mocks (3.3.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.3.0)
+    rspec-support (3.3.0)
+    safe_yaml (1.0.4)
+    slop (3.6.0)
+    timecop (0.7.1)
+    webmock (1.21.0)
+      addressable (>= 2.3.6)
+      crack (>= 0.3.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (~> 1.10)
+  coinbase-wallet!
+  pry (~> 0)
+  rake (~> 10.0)
+  rspec
+  timecop
+  webmock
+
+BUNDLED WITH
+   1.10.5

@@ -1,34 +1,29 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'coinbase/version'
+require 'coinbase/wallet/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "coinbase"
-  gem.version       = Coinbase::VERSION
-  gem.authors       = ["Brian Armstrong"]
-  gem.email         = [""]
+  gem.version       = Coinbase::Wallet::VERSION
+  gem.authors       = ["John Duhamel"]
+  gem.email         = ["jjd@coinbase.com"]
   gem.description   = ["An easy way to buy, send, and accept bitcoin."]
   gem.summary       = ["An easy way to buy, send, and accept bitcoin."]
-  gem.homepage      = "https://coinbase.com/api/doc"
+  gem.homepage      = "https://developers.coinbase.com/api/v2"
 
   gem.files         = `git ls-files`.split($/)
   gem.executables   = gem.files.grep(%r{^bin/}).map{ |f| File.basename(f) }
-  gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
+  gem.test_files    = gem.files.grep(%r{^(test|gem|features)/})
   gem.require_paths = ["lib"]
 
+  gem.add_dependency "bigdecimal"
+  gem.add_dependency "em-http-request"
 
-  # Gems that must be intalled for sift to compile and build
-  gem.add_development_dependency "rspec", "~> 2.12"
-  gem.add_development_dependency "fakeweb", "~> 1.3.0"
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency 'simplecov', '~> 0.7.1'
-
-  # Gems that must be intalled for sift to work
-  gem.add_dependency "httparty", ">= 0.8.3"
-  gem.add_dependency "multi_json", ">= 1.3.4"
-  gem.add_dependency "money", "~> 6.0"
-  gem.add_dependency "monetize", "~> 1.0"
-  gem.add_dependency "hashie", ">= 1.2.0"
-  gem.add_dependency "oauth2", "~> 1.0"
+  gem.add_development_dependency "bundler", "~> 1.10"
+  gem.add_development_dependency "rake", "~> 10.0"
+  gem.add_development_dependency "rgem"
+  gem.add_development_dependency "webmock"
+  gem.add_development_dependency "timecop"
+  gem.add_development_dependency "pry", "~> 0"
 end

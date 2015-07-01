@@ -1,8 +1,6 @@
-# Coinbase
+# Coinbase Wallet Gem
 
-An easy way to buy, send, and accept [bitcoin](http://en.wikipedia.org/wiki/Bitcoin) through the [Coinbase API](https://coinbase.com/docs/api/overview).
-
-This gem is a wrapper around the [Coinbase JSON API](https://developers.coinbase.com/api). It supports both the the [api key + secret authentication method](https://coinbase.com/docs/api/authentication) as well as OAuth 2.0 for performing actions on other people's account.
+This is the official client library for the Coinbase Wallet API v2. We provide an intuitive, stable interface to integrate Coinbase Wallet into your Ruby project.
 
 ## Installation
 
@@ -18,366 +16,563 @@ Or install it yourself as:
 
     $ gem install coinbase
 
-## Usage
+## Authentication
 
-### HMAC Authentication (for accessing your own account)
+### API Key (HMAC Client)
 
-Start by [enabling an API Key on your account](https://coinbase.com/settings/api)
-
-Next, create an instance of the client and pass it your API Key + Secret as parameters.
+We provide a synchronous client based on Net::HTTP as well as a asynchronous client based on the EM-HTTP-Request gem. For most users, the synchronous client will suffice.
 
 ```ruby
-coinbase = Coinbase::Client.new(ENV['COINBASE_API_KEY'], ENV['COINBASE_API_SECRET'])
+require 'coinbase/wallet'
+client = Coinbase::Wallet::Client.new(api_key: <api key>, api_secret: <api secret>)
 ```
 
-### OAuth 2.0 Authentication (for accessing others' accounts)
-
-Start by [creating a new OAuth 2.0 application](https://coinbase.com/settings/api).
-
-Then your app will need to go through [OAuth2 authentication](https://developers.coinbase.com/docs/wallet/authentication#oauth2-authentication) to obtain the user credentials shown in the hash below. If you're developing a Rails or Rack web application, the excellent [omniauth](https://github.com/intridea/omniauth) gem makes this step easy. We maintain an official omniauth strategy [here](https://github.com/coinbase/omniauth-coinbase) as well as a Rails [example application](https://github.com/coinbase/coinbase-oauth-rails-example) demonstrating its use.
-
-You can also create a [developer access token](https://www.coinbase.com/settings/api) to quickly get started by clicking your app and then "Create developer access token". When using this you can leave the refresh_token and expires_at blank.
+The primary intention of the asynchronous client is to integrate nicely with the [Coinbase Exchange Gem](https://github.com/coinbase/coinbase-exchange-ruby). If your project interfaces with our Exchange as well, please consider using this.
 
 ```ruby
-user_credentials = {
-	:access_token => 'access_token',
-	:refresh_token => 'refresh_token',
-	:expires_at => Time.now + 1.day
-}
-coinbase = Coinbase::OAuthClient.new(ENV['COINBASE_CLIENT_ID'], ENV['COINBASE_CLIENT_SECRET'], user_credentials)
+require 'coinbase/wallet'
+client = Coinbase::Wallet::AsyncClient.new(api_key: <api_key>, api_secret: <api secret>)
 ```
 
-Notice here that we did not hard code the API keys into our codebase, but set it in an environment variable instead. This is just one example, but keeping your credentials separate from your code base is a good [security practice](https://coinbase.com/docs/api/authentication#security).
+### OAuth2 Client
 
-Now you can call methods on `coinbase` similar to the ones described in the [api reference](https://developers.coinbase.com/api).  For example:
+We provide an OAuth client if you need access to user accounts other than your own. Currently, the gem does not handle the handshake process, and assumes you have an access token when it's initialized. The OAuth client is synchronous.  Please reach out if you would like us to add an asynchronous OAuth client as well.
 
 ```ruby
-coinbase.balance
-=> #<Money fractional:20035300000 currency:BTC>
-coinbase.balance.format
-=> "200.35300000 BTC"
-coinbase.balance.to_d
-=> #<BigDecimal:7ff36b091670,'0.200353E3',18(54)>
-coinbase.balance.to_s
-=> 200.35300000 # BTC amount
+require 'coinbase/wallet'
+
+# Initializing OAuthClient with both access and refresh token
+client = Coinbase::Wallet::OAuthClient.new(access_token: <access token>, refresh_token: <refresh_token>)
+
+# Initializing OAuthClient with only access token
+client = Coinbase::Wallet::OAuthClient.new(access_token: <access token>)
+```
+
+The OAuth client provides a few extra methods to refresh and revoke the access token.
+
+```ruby
+client.refresh!
+```
+
+```ruby
+client.revoke!
 ```
 
 #### Two factor authentication
 
-`send_money` endpoint requires 2FA token in certain situations (read more [here](https://developers.coinbase.com/docs/wallet/permissions#two-factor-authentication)). Specific exception is thrown when this is required:
+Send money endpoint requires 2FA token in certain situations (read more [here](https://developers.coinbase.com/docs/wallet/coinbase-connect#two-factor-authentication)). Specific exception is thrown when this is required:
 
 ```ruby
+account = client.primary_account
 begin
-    client.send_money('test@test.com', '1', 'your message', token_2fa: params[:token_2fa])
-rescue Coinbase::Client::TwoFactorAuthError
-    # Show 2FA dialog to user
+  account.send(to: 'test@test.com', amount: '1', currency: "BTC")
+rescue Coinbase::Client::TwoFactorRequiredError
+  # Show 2FA dialog to user and collect 2FA token
+
+  # Re-try call with `two_factor_token` param
+  account.send(to: 'test@test.com', amount: '1', currency: "BTC", two_factor_token: "123456")
 end
 ```
 
-#### Important note on refresh tokens
+## Requests
 
-If :expires_at is included with the user credentials, the client will automatically refresh the credentials when expired. There are two important things to consider when taking advantage of this functionality:
-
-1. You must remember to persist the credentials after you're finished with a client instance, since they may have changed. You can access the most up-to-date credentials by calling .credentials on the client instance. You should do this in an ensure block so that credentials are persisted even after a call that throws an error.
-2. In a concurrent environment, you MUST synchronize the use of a given set of credentials. If two threads use the same refresh token, the latter one will fail and, worse, you may persist the old refresh token over the new refresh token and lose all access to the given account.
-
-## Examples
-
-### Check your balance
+We provide one method per API endpoint. Several methods require one or more identifiers to be passed as arguments. Additionally, all parameters can be appended as [keyword arguements](https://robots.thoughtbot.com/ruby-2-keyword-arguments). If a required parameter is not supplied, the client will raise an error. For instance, the following call will send 100 bitcoin to the account registered with example@coinbase.com.
 
 ```ruby
-coinbase.balance.to_s
-=> "200.35300000" # BTC amount
+account = client.primary_account
+account.send(to: 'example@coinbase.com', amount: 100, currency: "USD", description: 'Sending 100 bitcoin')
 ```
 
-### Send bitcoin
+### Pagination
+
+Several endpoints are [paginated](https://developers.coinbase.com/api/v2#pagination). By default, the gem will only fetch the first page of data for a given request. You can implement your own pagination scheme, such as [pipelining](https://en.wikipedia.org/wiki/HTTP_pipelining), by setting the starting_after parameter in your response.
 
 ```ruby
-r = coinbase.send_money 'user@example.com', 1.23
-r.success?
-=> true
-r.transaction.status
-=> 'pending' # this will change to 'complete' in a few seconds if you are sending coinbase-to-coinbase, otherwise it will take about 1 hour, 'complete' means it cannot be reversed or canceled
-r.transaction.id
-=> '501a1791f8182b2071000087'
-r.transaction.recipient.email
-=> 'user@example.com'
-r.to_hash
-=> ... # raw hash response
+client.transactions(account_id) do |data, resp|
+  transactions = data
+end
+
+more_pages = true
+while more_pages
+  client.transactions(account_id, starting_after: transactions.last['id']) do |data, resp|
+    more_pages = resp.has_more?
+    transactions << data
+    transactions.flatten!
+  end
+end
 ```
 
-You can also send money in [a number of currencies](https://github.com/coinbase/coinbase-ruby/blob/master/supported_currencies.json).  The amount will be automatically converted to the correct BTC amount using the current exchange rate.
+If you want to automatically download the entire dataset, you may pass `fetch_all=true` as a parameter.
 
 ```ruby
-r = coinbase.send_money 'user@example.com', 1.23.to_money('AUS')
-r.transaction.amount.format
-=> "0.06713955 BTC"
+client.transactions(account_id, fetch_all: true) do |data, resp|
+  ...
+end
 ```
 
-The first parameter can also be a bitcoin address and the third parameter can be a note or description of the transaction.  Descriptions are only visible on Coinbase (not on the general bitcoin network).
+## Responses
+
+We provide several ways to access return data. Methods will return the data field of the response in hash format.
 
 ```ruby
-r = coinbase.send_money 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x', 2.23.to_money("USD"), "thanks for the coffee!"
-r.transaction.recipient_address
-=> "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
-r.transaction.notes
-=> "thanks for the coffee!"
+txs = account.transactions(account_id)
+txs.each do |tx|
+  p tx['id']
+end
 ```
 
-### Request bitcoin
-
-This will send an email to the recipient, requesting payment, and give them an easy way to pay.
+You can also handle data inside a block you pass to the method. **You must access data this way if you're using the asynchronous client.**
 
 ```ruby
-r = coinbase.request_money 'client@example.com', 50, "contractor hours in January (website redesign for 50 BTC)"
-r.transaction.request?
-=> true
-r.transaction.id
-=> '501a3554f8182b2754000003'
-r = coinbase.resend_request '501a3554f8182b2754000003'
-r.success?
-=> true
-r = coinbase.cancel_request '501a3554f8182b2754000003'
-r.success?
-=> true
-# from the other account
-r = coinbase.complete_request '501a3554f8182b2754000003'
-r.success?
-=> true
+account.transactions(account_id) do |txs|
+  txs.each { |tx| p tx['id'] }
+end
 ```
 
-### List your current transactions
-
-Sorted in descending order by timestamp, 30 per page.  You can pass an integer as the first param to page through results, for example `coinbase.transactions(2)`.
+If you need to access the response metadata (headers, pagination info, etc.) you can access the entire response as the second block paramenter.
 
 ```ruby
-r = coinbase.transactions
-r.current_page
-=> 1
-r.num_pages
-=> 7
-r.transactions.collect{|t| t.transaction.id }
-=> ["5018f833f8182b129c00002f", "5018f833f8182b129c00002e", ...]
-r.transactions.collect{|t| t.transaction.amount.format }
-=> ["-1.10000000 BTC", "42.73120000 BTC", ...]
+account.transactions(account_id) do |txs, resp|
+  p "STATUS: #{resp.status}"
+  p "HEADERS: #{resp.headers}"
+  p "BODY: #{resp.body}"
+end
 ```
 
-Transactions will always have an `id` attribute which is the primary way to identity them through the Coinbase api.  They will also have a `hsh` (bitcoin hash) attribute once they've been broadcast to the network (usually within a few seconds).
+**Response Object**
 
-### Get transaction details
-
-This will fetch the details/status of a transaction that was made within Coinbase or outside of Coinbase
+The default representation of response data is a JSON hash. However, we further abstract the response to allow access to response fields as though they were methods.
 
 ```ruby
-r = coinbase.transaction '5011f33df8182b142400000e'
-r.transaction.status
-=> 'pending'
-r.transaction.recipient_address
-=> 'mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x'
+account = client.primary_account
+p "Account:\t account.name"
+p "ID:\t account.id"
+p "Balance:\t #{account.balance.amount} #{account.balance.currency}"
 ```
 
-### Check bitcoin prices
+All values are returned directly from the API unmodified, except the following exceptions:
 
-Check the buy or sell price by passing a `quantity` of bitcoin that you'd like to buy or sell. This price includes Coinbase's fee of 1% and the bank transfer fee of $0.15.
+- [Money amounts](https://developers.coinbase.com/api/v2#money-hash) are always converted into [BigDecimal](http://ruby-doc.org/stdlib-2.1.1/libdoc/bigdecimal/rdoc/BigDecimal.html) objects. You should always use BigDecimal when handing bitcoin amounts for accurate presicion
+- [Timestamps](https://developers.coinbase.com/api/v2#timestamps) are always converted into [Time](http://ruby-doc.org/stdlib-2.1.1/libdoc/time/rdoc/Time.html) objects
 
-The `buy_price` and `sell_price` per Bitcoin will increase and decrease respectively as `quantity` increases. This [slippage](http://en.wikipedia.org/wiki/Slippage_(finance)) is normal and is influenced by the [market depth](http://en.wikipedia.org/wiki/Market_depth) on the exchanges we use.
+Most methods require an associated account. Thus, responses for the [account endpoints](https://developers.coinbase.com/api/v2#accounts) contain methods for accessing all the relevant endpoints. This is convient, as it doesn't require you to supply the same account id over and over again.
 
 ```ruby
-coinbase.buy_price(1).format
-=> "$17.95"
-coinbase.buy_price(30).format
-=> "$539.70"
+account = client.primary_account
+account.send(to: "example@coinbase.com", amount: 100, description: "Sending 100 bitcoin")
 ```
 
+Alternatively you can pass the account ID straight to the client:
 
 ```ruby
-coinbase.sell_price(1).format
-=> "$17.93"
-coinbase.sell_price(30).format
-=> "$534.60"
+client.transactions(<account_id>)
 ```
 
-Check the spot price of Bitcoin in a given `currency`. This is usually somewhere in between the buy and sell price, current to within a few minutes and does not include any Coinbase or bank transfer fees. The default currency is USD.
+Account response objects will automatically update if they detect any changes to the account. The easiest way to refresh an account is to call the refresh! method.
 
 ```ruby
-coinbase.spot_price.format
-=> "$431.42"
-coinbase.spot_price('EUR').format
-=> "€307,40"
+account.refresh!
 ```
 
-### Buy or Sell bitcoin
+### Warnings
 
-Buying and selling bitcoin requires you to [add a payment method](https://coinbase.com/buys) through the web app first.
+It's prudent to be conscious of warnings. By default, the gem will print all warning to STDERR.  If you wish to redirect this stream to somewhere else, such as a log file, then you can simply [change the $stderr global variable](http://stackoverflow.com/questions/4459330/how-do-i-temporarily-redirect-stderr-in-ruby).
 
-Then you can call `buy!` or `sell!` and pass a `quantity` of bitcoin you want to buy (as a float or integer).
+### Errors
+
+If the request is not successful, the gem will raise an error. We try to raise a unique error for every possible API response. All errors are subclasses of `Coinbase::Wallet::APIError`.
+
+|Error|Status|
+|---|---|
+|APIError|*|
+|BadRequestError|400|
+|ParamRequiredError|400|
+|InvalidRequestError|400|
+|PersonalDetailsRequiredError|400|
+|AuthenticationError|401|
+|UnverifiedEmailError|401|
+|InvalidTokenError|401|
+|RevokedTokenError|401|
+|ExpiredTokenError|401|
+|TwoFactorRequiredError|402|
+|InvalidScopeError|403|
+|NotFoundError|404|
+|ValidationError|422|
+|RateLimitError|429|
+|InternalServerError|500|
+|ServiceUnavailableError|503|
+
+## Usage
+
+This is not intended to provide complete documentation of the API. For more detail, please refer to the [official documentation](https://developers.coinbase.com/api/v2).
+
+###[Market Data](https://developers.coinbase.com/api/v2#data-api)
+
+**List supported native currencies**
 
 ```ruby
-r = coinbase.buy!(1)
-r.transfer.code
-=> '6H7GYLXZ'
-r.transfer.btc.format
-=> "1.00000000 BTC"
-r.transfer.total.format
-=> "$17.95"
-r.transfer.payout_date
-=> 2013-02-01 18:00:00 -0800
+client.currencies
 ```
 
+**List exchange rates**
 
 ```ruby
-r = coinbase.sell!(1)
-r.transfer.code
-=> 'RD2OC8AL'
-r.transfer.btc.format
-=> "1.00000000 BTC"
-r.transfer.total.format
-=> "$17.93"
-r.transfer.payout_date
-=> 2013-02-01 18:00:00 -0800
+client.exchange_rate
 ```
 
-### Listing Buy/Sell History
-
-You can use `transfers` to view past buys and sells.
+**Buy price**
 
 ```ruby
-r = coinbase.transfers
-r.current_page
- => 1 
-r.total_count
- => 7 
-r.transfers.collect{|t| t.transfer.type }
-=> ["Buy", "Buy", ...] 
-r.transfers.collect{|t| t.transfer.btc.amount }
-=> [0.01, 0.01, ...] 
-r.transfers.collect{|t| t.transfer.total.amount }
-=> [5.72, 8.35, ...] 
+client.buy_price
 ```
 
-### Create a payment button
-
-This will create the code for a payment button (and modal window) that you can use to accept bitcoin on your website.  You can read [more about payment buttons here and try a demo](https://coinbase.com/docs/merchant_tools/payment_buttons).
-
-The method signature is `def create_button name, price, description=nil, custom=nil, options={}`.  The `custom` param will get passed through in [callbacks](https://coinbase.com/docs/merchant_tools/callbacks) to your site.  The list of valid `options` [are described here](https://developers.coinbase.com/api#create-a-new-payment-button-page-or-iframe).
+**Sell price**
 
 ```ruby
-r = coinbase.create_button "Your Order #1234", 42.95.to_money('EUR'), "1 widget at €42.95", "my custom tracking code for this order"
-r.button.code
-=> "93865b9cae83706ae59220c013bc0afd"
-r.embed_html
-=> "<div class=\"coinbase-button\" data-code=\"93865b9cae83706ae59220c013bc0afd\"></div><script src=\"https://coinbase.com/assets/button.js\" type=\"text/javascript\"></script>"
+client.sell_price
 ```
 
-### Create an order for a button
-
-This will generate an order associated with a button. You can read [more about creating an order for a button here](https://developers.coinbase.com/api#create-an-order).
+**Spot price**
 
 ```ruby
-r = coinbase.create_order_for_button "93865b9cae83706ae59220c013bc0afd"
-=> "{\"success\"=>true, \"order\"=>{\"id\"=>\"ASXTKPZM\", \"created_at\"=>\"2013-12-13T01:36:47-08:00\", \"status\"=>\"new\", \"total_btc\"=>{\"cents\"=>6859115, \"currency_iso\"=>\"BTC\"}, \"total_native\"=>{\"cents\"=>4295, \"currency_iso\"=>\"EUR\"}, \"custom\"=>\"my custom tracking code for this order\", \"receive_address\"=>\"mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x\", \"button\"=>{\"type\"=>\"buy_now\", \"name\"=>\"Your Order #1234\", \"description\"=>\"1 widget at 42.95\", \"id\"=>\"93865b9cae83706ae59220c013bc0afd\"}, \"transaction\"=>nil}}"
+client.spot_price
 ```
 
-### Create a new user
+**Current server time**
 
 ```ruby
-r = coinbase.create_user "newuser@example.com", "some password"
-r.user.email
-=> "newuser@example.com"
-r.receive_address
-=> "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
+client.time
 ```
 
-A receive address is returned also in case you need to send the new user a payment right away.
+###[Users](https://developers.coinbase.com/api/v2#users)
 
-You can optionally pass in a client_id parameter that corresponds to your OAuth2 application and an array of permissions. When these are provided, the generated user will automatically have the permissions you’ve specified granted for your application. See the [API Reference](https://developers.coinbase.com/api#create-a-new-user-for-oauth2-application) for more details.
+**Get authorization info**
 
 ```ruby
-r = coinbase.create_user "newuser@example.com", "some password", client_id, ['transactions', 'buy', 'sell']
-r.user.email
-=> "newuser@example.com"
-r.receive_address
-=> "mpJKwdmJKYjiyfNo26eRp4j6qGwuUUnw9x"
-r.oauth.access_token
-=> "93865b9cae83706ae59220c013bc0afd93865b9cae83706ae59220c013bc0afd"
+client.auth_info
 ```
 
-## Exchange rates
-
-This gem also extends Money::Bank::VariableExchange with Money::Bank::Coinbase to give you access to Coinbase exchange rates.
-
-### Usage
-
-``` ruby
-cb_bank = Money::Bank::Coinbase.new
-
-# Call this before calculating exchange rates
-# This will download the rates from CB
-cb_bank.fetch_rates!
-
-# Exchange 100 USD to BTC
-# API is the same as the money gem
-cb_bank.exchange_with(Money.new(10000, :USD), :BTC) # '0.15210000'.to_money(:BTC)
-
-# Set as default bank to do arithmetic and comparisons on Money objects
-Money.default_bank = cb_bank
-money1 = Money.new(10)
-money1.bank # cb_bank
-
-Money.us_dollar(10000).exchange_to(:BTC) # '0.15210000'.to_money(:BTC)
-'1'.to_money(:BTC) > '1'.to_money(:USD) # true
-
-# Expire rates after some number of seconds (by default, rates are only updated when you call fetch_rates!)
-cb_bank.ttl_in_seconds = 3600 # Cache rates for one hour
-
-# After an hour, different rates
-cb_bank.exchange_with(Money.new(10000, :USD), :BTC) # '0.15310000'.to_money(:BTC)
-
-```
-
-## Adding new methods
-
-You can see a [list of method calls here](https://github.com/coinbase/coinbase-ruby/blob/master/lib/coinbase/client.rb) and how they are implemented.  They are a wrapper around the [Coinbase JSON API](https://developers.coinbase.com/api).
-
-If there are any methods listed in the [API Reference](https://developers.coinbase.com/api) that haven't been added to the gem yet, you can also call `get`, `post`, `put`, or `delete` with a `path` and optional `params` hash for a quick implementation.  The raw response will be returned. For example:
+**Lookup user info**
 
 ```ruby
-coinbase.get('/account/balance').to_hash
-=> {"amount"=>"50.00000000", "currency"=>"BTC"}
+client.user(user_id)
 ```
 
-Or feel free to add a new wrapper method and submit a pull request.
-
-## Security Notes
-
-If someone gains access to your API Key they will have complete control of your Coinbase account.  This includes the abillity to send all of your bitcoins elsewhere.
-
-For this reason, API access is disabled on all Coinbase accounts by default.  If you decide to enable API key access you should take precautions to store your API key securely in your application.  How to do this is application specific, but it's something you should [research](http://programmers.stackexchange.com/questions/65601/is-it-smart-to-store-application-keys-ids-etc-directly-inside-an-application) if you have never done this before.
-
-## Decimal precision
-
-This gem relies on the [Money](https://github.com/RubyMoney/money) gem, which by default uses the [BigDecimal](www.ruby-doc.org/stdlib-2.0/libdoc/bigdecimal/rdoc/BigDecimal.html) class for arithmetic to maintain decimal precision for all values returned.
-
-When working with currency values in your application, it's important to remember that floating point arithmetic is prone to [rounding errors](http://en.wikipedia.org/wiki/Round-off_error). 
-
-For this reason, we provide examples which use BigDecimal as the preferred way to perform arithmetic:
-
-```coinbase.balance.to_d
-=> #<BigDecimal:7ff36b091670,'0.200353E3',18(54)>
-```
-
-## Testing
-
-If you'd like to contribute code or modify this gem, you can run the test suite with:
+**Get current user**
 
 ```ruby
-gem install coinbase --dev
-bundle exec rspec # or just 'rspec' may work
+client.current_user
 ```
 
-## Contributing
+**Update current user**
 
-1. Fork this repo and make changes in your own copy
-2. Add a test if applicable and run the existing tests with `rspec` to make sure they pass
-3. Commit your changes and push to your fork `git push origin master`
-4. Create a new pull request and submit it back to us!
+```ruby
+client.update_current_user(name: "New Name")
+```
+
+###[Accounts](https://developers.coinbase.com/api/v2#accounts)
+
+**List all accounts**
+
+```ruby
+client.accounts
+```
+
+**List account details**
+
+```ruby
+client.account(account_id)
+```
+
+**List primary account details**
+
+```ruby
+client.primary_account
+```
+
+**Set account as primary**
+
+```ruby
+account.make_primary!
+```
+
+**Create a new bitcoin account**
+
+```ruby
+client.create_account(name: "New Account")
+```
+
+**Update an account**
+
+```ruby
+account.update!(name: "New Account Name")
+```
+
+**Delete an account**
+
+```ruby
+account.delete!
+```
+
+###[Addresses](https://developers.coinbase.com/api/v2#addresses)
+
+**List receive addresses for account**
+
+```ruby
+account.addresses
+```
+
+**Get receive address info**
+
+```ruby
+account.address(address_id)
+```
+
+**Create a new receive address**
+
+```ruby
+account.create_address
+```
+
+###[Transactions](https://developers.coinbase.com/api/v2#transactions)
+
+**List transactions**
+
+```ruby
+account.transactions
+```
+
+**Get transaction info**
+
+```ruby
+account.transaction(transaction_id)
+```
+
+**Send funds**
+
+```ruby
+account.send(to: <bitcoin address>, amount: "5.0", currency: "USD", description: "Your first bitcoin!")
+```
+
+**Transfer funds to a new account**
+
+```ruby
+account.transfer(to: <account ID>, amount: "1", currency: "BTC", description: "Your first bitcoin!")
+```
+
+**Request funds**
+
+```ruby
+account .request(to: <email>, amount: "8.0", currency: "USD", description: "Burrito")
+```
+
+**Resend request**
+
+```ruby
+account.resend_request(request_id)
+```
+
+**Cancel request**
+
+```ruby
+account.cancel_request(request_id)
+```
+
+**Fulfill request**
+
+```ruby
+account.complete_request(request_id)
+```
+
+###[Buys](https://developers.coinbase.com/api/v2#buys)
+
+**List buys**
+
+```ruby
+account.list_buys
+```
+
+**Get buy info**
+
+```ruby
+account.list_buy(buy_id)
+```
+
+**Buy bitcoins**
+
+```ruby
+account.buy(amount: "1", currency: "BTC")
+```
+
+**Commit a buy**
+
+You only need to do this if you pass `commit=true` when you call the buy method.
+
+```ruby
+buy = account.buy(amount: "1", currency: "BTC", commit: false)
+account.commit_buy(buy.id)
+```
+
+###[Sells](https://developers.coinbase.com/api/v2#sells)
+
+**List sells**
+
+```ruby
+account.list_sells
+```
+
+**Get sell info**
+
+```ruby
+account.list_sell(sell_id)
+```
+
+**Sell bitcoins**
+
+```ruby
+account.sell(amount: "1", currency: "BTC")
+```
+
+**Commit a sell**
+
+You only need to do this if you pass `commit=true` when you call the sell method.
+
+```ruby
+sell = account.sell(amount: "1", currency: "BTC", commit: false)
+account.commit_sell(sell.id)
+```
+
+###[Deposit](https://developers.coinbase.com/api/v2#deposits)
+
+**List deposits**
+
+```ruby
+account.list_deposits
+```
+
+**Get deposit info**
+
+```ruby
+account.list_deposit(deposit_id)
+```
+
+**Deposit funds**
+
+```ruby
+account.deposit(amount: "10", currency: "USD")
+```
+
+**Commit a deposit**
+
+You only need to do this if you pass `commit=true` when you call the deposit method.
+
+```ruby
+deposit = account.deposit(amount: "1", currency: "BTC", commit: false)
+account.commit_deposit(deposit.id)
+```
+
+###[Withdrawals](https://developers.coinbase.com/api/v2#withdrawals)
+
+**List withdrawals**
+
+```ruby
+account.list_withdrawals
+```
+
+**Get withdrawal**
+
+```ruby
+account.list_withdrawal(withdrawal_id)
+```
+
+**Withdraw funds**
+
+```ruby
+account.withdraw(amount: "10", currency: "USD")
+```
+
+**Commit a withdrawal**
+
+You only need to do this if you pass `commit=true` when you call the withdrawal method.
+
+```ruby
+withdraw = account.withdraw(amount: "1", currency: "BTC", commit: false)
+account.commit_withdrawal(withdrawal.id)
+```
+
+###[Payment Methods](https://developers.coinbase.com/api/v2#payment-methods)
+
+**List payment methods**
+
+```ruby
+client.payment_methods
+```
+
+**Get payment method**
+
+```ruby
+client.payment_method(payment_method_id)
+```
+
+###[Merchants](https://developers.coinbase.com/api/v2#merchants)
+
+#### Get merchant
+
+```ruby
+client.merchant(merchant_id)
+```
+
+###[Orders](https://developers.coinbase.com/api/v2#orders)
+
+#### List orders
+
+```ruby
+client.orders
+```
+
+#### Get order
+
+```ruby
+client.order(order_id)
+```
+
+#### Create order
+
+```ruby
+client.create_order(amount: "1", currency: "BTC", name: "Order #1234")
+```
+
+#### Refund order
+
+```ruby
+order = client.orders.first
+order.refund!
+```
+
+### Checkouts
+
+#### List checkouts
+
+```ruby
+client.checkouts
+```
+
+#### Get checkout
+
+```ruby
+client.checkout(checkout_id)
+```
+
+#### Get checkout's orders
+
+```ruby
+checkout = client.checkout(checkout_id)
+checkout.orders
+```
+
+#### Create order for checkout
+
+```ruby
+checkout = client.checkout(checkout_id)
+checkout.create_order(amount: "1", currency: "BTC", name: "Order #1234")
+```
