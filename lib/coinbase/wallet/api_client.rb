@@ -12,7 +12,7 @@ module Coinbase
         out = nil
         get("/v2/currencies", params) do |data, resp|
           out = resp.data.map { |item| APIObject.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -21,7 +21,7 @@ module Coinbase
         out = nil
         get("/v2/exchange-rates", params) do |data, resp|
           out = resp.data.map { |item| APIObject.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -30,7 +30,7 @@ module Coinbase
         out = nil
         get("/v2/prices/buy", params) do |data, resp|
           out = APIObject.new(self, resp.data)
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -39,7 +39,7 @@ module Coinbase
         out = nil
         get("/v2/prices/sell", params) do |data, resp|
           out = APIObject.new(self, resp.data)
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -47,7 +47,7 @@ module Coinbase
         out = nil
         get("/v2/prices/spot", params) do |data, resp|
           out = APIObject.new(self, resp.data)
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -56,7 +56,7 @@ module Coinbase
         out = nil
         get("/v2/time", params) do |data, resp|
           out = APIObject.new(self, resp.data)
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -173,7 +173,7 @@ module Coinbase
         out = nil
         get("/v2/accounts/#{account_id}/addresses", params) do |data, resp|
           out = resp.data.map { |item| APIObject.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -203,7 +203,7 @@ module Coinbase
         out = nil
         get("/v2/accounts/#{account_id}/transactions", params) do |data, resp|
           out = resp.data.map { |item| Transaction.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -293,7 +293,7 @@ module Coinbase
         out = nil
         get("/v2/accounts/#{account_id}/buys") do |data, resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -336,7 +336,7 @@ module Coinbase
         out = nil
         get("/v2/accounts/#{account_id}/sells") do |data, resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -379,7 +379,7 @@ module Coinbase
         out = nil
         get("/v2/accounts/#{account_id}/deposits") do |data, resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
@@ -422,7 +422,7 @@ module Coinbase
         out = nil
         get("/v2/accounts/#{account_id}/withdrawals") do |data, resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
-          yield(data, resp) if block_given?
+          yield(out, resp) if block_given?
         end
         out
       end
