@@ -27,10 +27,12 @@ require 'coinbase/wallet'
 client = Coinbase::Wallet::Client.new(api_key: <api key>, api_secret: <api secret>)
 ```
 
-The primary intention of the asynchronous client is to integrate nicely with the [Coinbase Exchange Gem](https://github.com/coinbase/coinbase-exchange-ruby). If your project interfaces with our Exchange as well, please consider using this.
+The primary intention of the asynchronous client is to integrate nicely with the [Coinbase Exchange Gem](https://github.com/coinbase/coinbase-exchange-ruby). If your project interfaces with our Exchange as well, please consider using this.  *To use this interface, you must include em-http-request gem on your own.*
 
 ```ruby
 require 'coinbase/wallet'
+require 'em-http'
+
 client = Coinbase::Wallet::AsyncClient.new(api_key: <api_key>, api_secret: <api secret>)
 ```
 
