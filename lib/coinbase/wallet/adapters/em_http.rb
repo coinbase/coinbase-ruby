@@ -49,6 +49,10 @@ module Coinbase
         JSON.parse(@response.response)
       end
 
+      def body=(body)
+        @response.response = body.to_json
+      end
+
       def headers
         out = @response.response_header.map do |key, val|
           [ key.upcase.gsub('_', '-'), val ]

@@ -21,6 +21,10 @@ module Coinbase
       end
       alias_method :data, :body
 
+      def body=(body)
+        raise NotImplementedError
+      end
+
       def headers
         raise NotImplementedError
       end

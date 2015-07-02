@@ -9,9 +9,9 @@ module Coinbase
       end
 
       def refresh!(params = {})
-        @client.get(self['resource_path'], params) do |data, resp|
-          update(data)
-          yield(data, resp) if block_given?
+        @client.get(self['resource_path'], params) do |resp|
+          update(resp.data)
+          yield(resp.data, resp) if block_given?
         end
       end
 

@@ -6,10 +6,10 @@ require 'coinbase/wallet/version'
 Gem::Specification.new do |gem|
   gem.name          = "coinbase"
   gem.version       = Coinbase::Wallet::VERSION
-  gem.authors       = ["John Duhamel"]
+  gem.authors       = ["John Duhamel", "Jori Lallo"]
   gem.email         = ["jjd@coinbase.com"]
-  gem.description   = ["An easy way to buy, send, and accept bitcoin."]
-  gem.summary       = ["An easy way to buy, send, and accept bitcoin."]
+  gem.description   = "Client library for Coinbase Wallet API v2"
+  gem.summary       = "Client library for Coinbase Wallet API v2"
   gem.homepage      = "https://developers.coinbase.com/api/v2"
 
   gem.files         = `git ls-files`.split($/)
@@ -22,8 +22,8 @@ Gem::Specification.new do |gem|
 
   gem.add_development_dependency "bundler", "~> 1.10"
   gem.add_development_dependency "rake", "~> 10.0"
-  gem.add_development_dependency "rgem"
-  gem.add_development_dependency "webmock"
+  gem.add_development_dependency "rspec"
+  gem.add_development_dependency "webmock", "1.21.0"
   gem.add_development_dependency "timecop"
   gem.add_development_dependency "pry", "~> 0"
 end

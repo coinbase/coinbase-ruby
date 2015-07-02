@@ -6,8 +6,8 @@ module Coinbase
     class CurrentUser < User
       def update!(params = {})
         @client.update_current_user(params) do |data, resp|
-          update(data)
-          yield(data, resp) if block_given?
+          update(resp.data)
+          yield(resp.data, resp) if block_given?
         end
       end
     end
