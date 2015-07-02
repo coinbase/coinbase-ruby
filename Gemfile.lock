@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    coinbase (4.0.0)
+    coinbase (4.0.1)
       bigdecimal
       em-http-request
 
@@ -64,4 +64,4 @@ DEPENDENCIES
   webmock (= 1.21.0)
 
 BUNDLED WITH
-   1.10.3
+   1.10.5
