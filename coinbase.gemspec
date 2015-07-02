@@ -20,10 +20,9 @@ Gem::Specification.new do |gem|
   gem.add_dependency "bigdecimal"
   gem.add_dependency "em-http-request"
 
-  gem.add_development_dependency "bundler", "~> 1.10"
-  gem.add_development_dependency "rake", "~> 10.0"
+  gem.add_development_dependency "rake"
   gem.add_development_dependency "rspec"
-  gem.add_development_dependency "webmock", "1.21.0"
+  gem.add_development_dependency "webmock"
   gem.add_development_dependency "timecop"
-  gem.add_development_dependency "pry", "~> 0"
+  gem.add_development_dependency "pry"
 end
