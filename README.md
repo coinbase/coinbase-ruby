@@ -10,11 +10,11 @@ Add this line to your application's Gemfile:
 
 Then execute:
 
-    $ bundle install
+    bundle install
 
 Or install it yourself as:
 
-    $ gem install coinbase
+    gem install coinbase
 
 ## Authentication
 
@@ -57,6 +57,8 @@ client.refresh!
 ```ruby
 client.revoke!
 ```
+
+_Protip:tm::_ You can test OAuth2 authentication easily with Developer Access Tokens which can be created under your [OAuth2 application settings](https://www.coinbase.com/settings/api). These are short lived tokens which authenticate but don't require full OAuth2 handshake to obtain.
 
 #### Two factor authentication
 
@@ -576,3 +578,13 @@ checkout.orders
 checkout = client.checkout(checkout_id)
 checkout.create_order(amount: "1", currency: "BTC", name: "Order #1234")
 ```
+
+## Contributing and testing
+
+Any and all contributions are welcome! The process is simple: fork this repo, make your changes, add tests, run the test suite, and submit a pull request. Tests are run via rspec. To run the tests, clone the repository and then:
+
+    # Install the requirements
+    gem install coinbase
+
+    # Run tests
+    rspec spec
