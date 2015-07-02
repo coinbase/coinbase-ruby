@@ -43,6 +43,10 @@ module Coinbase
         JSON.parse(@response.body) rescue {}
       end
 
+      def body=(body)
+        @response.body = body.to_json
+      end
+
       def data
         body['data']
       end

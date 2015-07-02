@@ -50,7 +50,7 @@ module Coinbase
         params[:token] ||= @access_token
 
         out = nil
-        post("/oauth/revoke", params) do |data, resp|
+        post("/oauth/revoke", params) do |resp|
           out = APIObject.new(self, resp.body)
           yield(out, resp) if block_given?
         end
@@ -64,7 +64,7 @@ module Coinbase
         raise "Missing Parameter: refresh_token" unless params.has_key?(:refresh_token)
 
         out = nil
-        post("/oauth/token", params) do |data, resp|
+        post("/oauth/token", params) do |resp|
           out = APIObject.new(self, resp.body)
           @access_token = out.access_token
           yield(out, resp) if block_given?
