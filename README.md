@@ -78,6 +78,17 @@ rescue Coinbase::Client::TwoFactorRequiredError
 end
 ```
 
+### Sandbox support
+
+All three clients support [Coinbase Sandbox](https://developers.coinbase.com/api/v2#sandbox). You can initialize clients with optional `api_url` parameter:
+
+```ruby
+require 'coinbase/wallet'
+client = Coinbase::Wallet::Client.new(api_key: <sandbox api key>, api_secret: <sandbox api secret>, api_url: "https://api.sandbox.coinbase.com")
+```
+
+Remember that both API key and OAuth2 credentials are different for Sandbox environment and you need to create them separately at [sandbox.coinbase.com](https://sandbox.coinbase.com).
+
 ## Requests
 
 We provide one method per API endpoint. Several methods require one or more identifiers to be passed as arguments. Additionally, all parameters can be appended as [keyword arguements](https://robots.thoughtbot.com/ruby-2-keyword-arguments). If a required parameter is not supplied, the client will raise an error. For instance, the following call will send 100 bitcoin to the account registered with example@coinbase.com.
