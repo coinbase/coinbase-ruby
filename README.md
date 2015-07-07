@@ -378,7 +378,7 @@ account.transfer(to: <account ID>, amount: "1", currency: "BTC", description: "Y
 **Request funds**
 
 ```ruby
-account .request(to: <email>, amount: "8.0", currency: "USD", description: "Burrito")
+account.request(to: <email>, amount: "8.0", currency: "USD", description: "Burrito")
 ```
 
 **Resend request**
