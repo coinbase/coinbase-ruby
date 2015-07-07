@@ -172,7 +172,7 @@ module Coinbase
       def addresses(account_id, params = {})
         out = nil
         get("/v2/accounts/#{account_id}/addresses", params) do |resp|
-          out = resp.data.map { |item| APIObject.new(self, item) }
+          out = resp.data.map { |item| Address.new(self, item) }
           yield(out, resp) if block_given?
         end
         out
@@ -181,7 +181,16 @@ module Coinbase
       def address(account_id, address_id, params = {})
         out = nil
         get("/v2/accounts/#{account_id}/addresses/#{address_id}", params) do |resp|
-          out = APIObject.new(self, resp.data)
+          out = Address.new(self, resp.data)
+          yield(out, resp) if block_given?
+        end
+        out
+      end
+
+      def address_transactions(account_id, address_id, params = {})
+        out = nil
+        get("/v2/accounts/#{account_id}/addresses/#{address_id}/transactions", params) do |resp|
+          out = resp.data.map { |item| Transaction.new(self, item) }
           yield(out, resp) if block_given?
         end
         out
@@ -190,7 +199,7 @@ module Coinbase
       def create_address(account_id, params = {})
         out = nil
         post("/v2/accounts/#{account_id}/addresses", params) do |resp|
-          out = APIObject.new(self, resp.data)
+          out = Address.new(self, resp.data)
           yield(out, resp) if block_given?
         end
         out
