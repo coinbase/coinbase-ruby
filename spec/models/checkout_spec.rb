@@ -37,8 +37,8 @@ describe Coinbase::Wallet::Checkout do
   describe '#orders' do
     it 'should get latest order' do
       stub_request(:get, 'https://api.coinbase.com' + @object_data['resource_path'] + '/orders')
-        .to_return(body: { data: mock_item }.to_json)
-      expect(@object.orders).to eq mock_item
+        .to_return(body: { data: [mock_item] }.to_json)
+      expect(@object.orders).to eq [mock_item]
     end
   end
 

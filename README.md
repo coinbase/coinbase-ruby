@@ -343,6 +343,12 @@ account.addresses
 account.address(address_id)
 ```
 
+**List transactiona for address**
+
+```ruby
+account.address_transactions(address_id)
+```
+
 **Create a new receive address**
 
 ```ruby
