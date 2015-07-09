@@ -5,6 +5,8 @@ module Coinbase
       def initialize(base_uri, options = {})
         @conn = Net::HTTP.new(base_uri.host, base_uri.port)
         @conn.use_ssl = true if base_uri.scheme == 'https'
+        @conn.cert_store = self.class.whitelisted_certificates
+        @conn.ssl_version = :TLSv1
       end
 
       private

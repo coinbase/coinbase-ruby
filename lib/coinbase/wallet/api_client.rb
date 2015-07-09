@@ -666,6 +666,27 @@ module Coinbase
           yield(resp)
         end
       end
+
+      def self.whitelisted_certificates
+        path = File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
+
+        certs = [ [] ]
+        File.readlines(path).each do |line|
+          next if ["\n","#"].include?(line[0])
+          certs.last << line
+          certs << [] if line == "-----END CERTIFICATE-----\n"
+        end
+
+        result = OpenSSL::X509::Store.new
+
+        certs.each do |lines|
+          next if lines.empty?
+          cert = OpenSSL::X509::Certificate.new(lines.join)
+          result.add_cert(cert)
+        end
+
+        result
+      end
     end
   end
 end
