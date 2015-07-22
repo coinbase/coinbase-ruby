@@ -15,6 +15,12 @@ module Coinbase
         $stderr.puts message
       end
 
+      # OAuth2 errors
+      if resp.status >= 400 && resp.body['error']
+        raise APIError, resp.body['error_description']
+      end
+
+      # Regular errors
       case resp.status
       when 400
         case resp.body['errors'].first['id']
