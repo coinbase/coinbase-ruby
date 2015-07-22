@@ -42,9 +42,9 @@ describe Coinbase::Wallet::OAuthClient do
         })
       .to_return(body: body.to_json, status: 200)
 
-    client.refresh!
     expect(client.refresh!).to eq body
     expect(client.access_token).to eq 'new_access_token'
+    expect(client.refresh_token).to eq 'new_refresh_token'
   end
 
   it '#revoke!' do

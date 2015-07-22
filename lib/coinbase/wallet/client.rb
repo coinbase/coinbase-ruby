@@ -66,7 +66,10 @@ module Coinbase
         out = nil
         post("/oauth/token", params) do |resp|
           out = APIObject.new(self, resp.body)
+          # Update tokens to current instance
+          # Developer should always persist them
           @access_token = out.access_token
+          @refresh_token = out.refresh_token
           yield(out, resp) if block_given?
         end
         out
