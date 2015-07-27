@@ -21,34 +21,36 @@ module Coinbase
       end
 
       # Regular errors
-      case resp.status
-      when 400
-        case resp.body['errors'].first['id']
-        when 'param_required' then raise ParamRequiredError, format_error(resp)
-        when 'invalid_request' then raise InvalidRequestError, format_error(resp)
-        when 'personal_details_required' then raise PersonalDetailsRequiredError, format_error(resp)
+      if resp.body['errors']
+        case resp.status
+        when 400
+          case resp.body['errors'].first['id']
+          when 'param_required' then raise ParamRequiredError, format_error(resp)
+          when 'invalid_request' then raise InvalidRequestError, format_error(resp)
+          when 'personal_details_required' then raise PersonalDetailsRequiredError, format_error(resp)
+          end
+          raise BadRequestError, format_error(resp)
+        when 401
+          case resp.body['errors'].first['id']
+          when 'authentication_error' then raise AuthenticationError, format_error(resp)
+          when 'unverified_email' then raise UnverifiedEmailError, format_error(resp)
+          when 'invalid_token' then raise InvalidTokenError, format_error(resp)
+          when 'revoked_token' then raise RevokedTokenError, format_error(resp)
+          when 'expired_token' then raise ExpiredTokenError, format_error(resp)
+          end
+          raise AuthenticationError, format_error(resp)
+        when 402 then raise TwoFactorRequiredError, format_error(resp)
+        when 403 then raise InvalidScopeError, format_error(resp)
+        when 404 then raise NotFoundError, format_error(resp)
+        when 422 then raise ValidationError, format_error(resp)
+        when 429 then raise RateLimitError, format_error(resp)
+        when 500 then raise InternalServerError, format_error(resp)
+        when 503 then raise ServiceUnavailableError, format_error(resp)
         end
-        raise BadRequestError, format_error(resp)
-      when 401
-        case resp.body['errors'].first['id']
-        when 'authentication_error' then raise AuthenticationError, format_error(resp)
-        when 'unverified_email' then raise UnverifiedEmailError, format_error(resp)
-        when 'invalid_token' then raise InvalidTokenError, format_error(resp)
-        when 'revoked_token' then raise RevokedTokenError, format_error(resp)
-        when 'expired_token' then raise ExpiredTokenError, format_error(resp)
-        end
-        raise AuthenticationError, format_error(resp)
-      when 402 then raise TwoFactorRequiredError, format_error(resp)
-      when 403 then raise InvalidScopeError, format_error(resp)
-      when 404 then raise NotFoundError, format_error(resp)
-      when 422 then raise ValidationError, format_error(resp)
-      when 429 then raise RateLimitError, format_error(resp)
-      when 500 then raise InternalServerError, format_error(resp)
-      when 503 then raise ServiceUnavailableError, format_error(resp)
       end
 
       if resp.status > 400
-        raise APIError, resp.body
+        raise APIError, "[#{resp.status}] #{resp.body}"
       end
     end
 

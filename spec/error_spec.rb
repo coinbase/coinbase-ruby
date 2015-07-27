@@ -127,4 +127,11 @@ describe Coinbase::Wallet do
                  status: 503)
     expect { @client.primary_account }.to raise_error Coinbase::Wallet::ServiceUnavailableError
   end
+
+  it "handles oauth exception" do
+    stub_request(:get, /.*/)
+      .to_return(body: { error: "invalid_request", error_description: "test"}.to_json,
+                 status: 401)
+    expect { @client.primary_account }.to raise_error Coinbase::Wallet::APIError
+  end
 end
