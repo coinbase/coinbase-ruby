@@ -597,7 +597,7 @@ checkout.orders
 
 ```ruby
 checkout = client.checkout(checkout_id)
-checkout.create_order(amount: "1", currency: "BTC", name: "Order #1234")
+checkout.create_order
 ```
 
 ## Contributing and testing
