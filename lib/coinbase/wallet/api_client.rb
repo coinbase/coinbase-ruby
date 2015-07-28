@@ -602,7 +602,7 @@ module Coinbase
       #
       # HTTP Stuff
       #
-      def get(path, params = {})
+      def get(path, params)
         uri = path
         if params.count > 0
           uri += "?#{URI.encode_www_form(params)}"
@@ -631,7 +631,7 @@ module Coinbase
         end
       end
 
-      def put(path, params = {})
+      def put(path, params)
         headers = {}
         if params.has_key? :two_factor_token
           headers['CB-2FA-TOKEN'] = params[:two_factor_token]
@@ -643,7 +643,7 @@ module Coinbase
         end
       end
 
-      def post(path, params = {})
+      def post(path, params)
         headers = {}
         if params.has_key? :two_factor_token
           headers['CB-2FA-TOKEN'] = params[:two_factor_token]
@@ -655,7 +655,7 @@ module Coinbase
         end
       end
 
-      def delete(path, params = {})
+      def delete(path, params)
         headers = {}
         if params.has_key? :two_factor_token
           headers['CB-2FA-TOKEN'] = params[:two_factor_token]
