@@ -84,7 +84,7 @@ module Coinbase
 
       def auth_info(params = {})
         out = nil
-        get("/v2/user/auth") do |resp|
+        get("/v2/user/auth", params) do |resp|
           out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -298,9 +298,9 @@ module Coinbase
       #
       # Buys
       #
-      def list_buys(account_id, pararms={})
+      def list_buys(account_id, params={})
         out = nil
-        get("/v2/accounts/#{account_id}/buys") do |resp|
+        get("/v2/accounts/#{account_id}/buys", params) do |resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
           yield(out, resp) if block_given?
         end
@@ -309,7 +309,7 @@ module Coinbase
 
       def list_buy(account_id, transaction_id, params = {})
         out = nil
-        get("/v2/accounts/#{account_id}/buys/#{transaction_id}") do |resp|
+        get("/v2/accounts/#{account_id}/buys/#{transaction_id}", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -322,7 +322,7 @@ module Coinbase
         end
 
         out = nil
-        post("/v2/accounts/#{account_id}/buys") do |resp|
+        post("/v2/accounts/#{account_id}/buys", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -331,7 +331,7 @@ module Coinbase
 
       def commit_buy(account_id, transaction_id, params = {})
         out = nil
-        post("/v2/accounts/#{account_id}/buys/#{transaction_id}/commit") do |resp|
+        post("/v2/accounts/#{account_id}/buys/#{transaction_id}/commit", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -343,7 +343,7 @@ module Coinbase
       #
       def list_sells(account_id, params = {})
         out = nil
-        get("/v2/accounts/#{account_id}/sells") do |resp|
+        get("/v2/accounts/#{account_id}/sells", params) do |resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
           yield(out, resp) if block_given?
         end
@@ -352,7 +352,7 @@ module Coinbase
 
       def list_sell(account_id, transaction_id, params = {})
         out = nil
-        get("/v2/accounts/#{account_id}/sells/#{transaction_id}") do |resp|
+        get("/v2/accounts/#{account_id}/sells/#{transaction_id}", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -365,7 +365,7 @@ module Coinbase
         end
 
         out = nil
-        post("/v2/accounts/#{account_id}/sells") do |resp|
+        post("/v2/accounts/#{account_id}/sells", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -374,7 +374,7 @@ module Coinbase
 
       def commit_sell(account_id, transaction_id, params = {})
         out = nil
-        post("/v2/accounts/#{account_id}/sells/#{transaction_id}/commit") do |resp|
+        post("/v2/accounts/#{account_id}/sells/#{transaction_id}/commit", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -384,9 +384,9 @@ module Coinbase
       #
       # Deposits
       #
-      def list_deposits(account_id, pararms={})
+      def list_deposits(account_id, params={})
         out = nil
-        get("/v2/accounts/#{account_id}/deposits") do |resp|
+        get("/v2/accounts/#{account_id}/deposits", params) do |resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
           yield(out, resp) if block_given?
         end
@@ -395,7 +395,7 @@ module Coinbase
 
       def list_deposit(account_id, transaction_id, params = {})
         out = nil
-        get("/v2/accounts/#{account_id}/deposits/#{transaction_id}") do |resp|
+        get("/v2/accounts/#{account_id}/deposits/#{transaction_id}", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -408,7 +408,7 @@ module Coinbase
         end
 
         out = nil
-        post("/v2/accounts/#{account_id}/deposits") do |resp|
+        post("/v2/accounts/#{account_id}/deposits", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -417,7 +417,7 @@ module Coinbase
 
       def commit_deposit(account_id, transaction_id, params = {})
         out = nil
-        post("/v2/accounts/#{account_id}/deposits/#{transaction_id}/commit") do |resp|
+        post("/v2/accounts/#{account_id}/deposits/#{transaction_id}/commit", params) do |resp|
           out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -427,9 +427,9 @@ module Coinbase
       #
       # withdrawals
       #
-      def list_withdrawals(account_id, pararms={})
+      def list_withdrawals(account_id, params={})
         out = nil
-        get("/v2/accounts/#{account_id}/withdrawals") do |resp|
+        get("/v2/accounts/#{account_id}/withdrawals", params) do |resp|
           out = resp.data.map { |item| Transfer.new(self, item) }
           yield(out, resp) if block_given?
         end
@@ -438,7 +438,7 @@ module Coinbase
 
       def list_withdrawal(account_id, transaction_id, params = {})
         out = nil
-        get("/v2/accounts/#{account_id}/withdrawals/#{transaction_id}") do |resp|
+        get("/v2/accounts/#{account_id}/withdrawals/#{transaction_id}", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -451,7 +451,7 @@ module Coinbase
         end
 
         out = nil
-        post("/v2/accounts/#{account_id}/withdrawals") do |resp|
+        post("/v2/accounts/#{account_id}/withdrawals", params) do |resp|
           out = Transfer.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -460,7 +460,7 @@ module Coinbase
 
       def commit_withdrawal(account_id, transaction_id, params = {})
         out = nil
-        post("/v2/accounts/#{account_id}/withdrawals/#{transaction_id}/commit") do |resp|
+        post("/v2/accounts/#{account_id}/withdrawals/#{transaction_id}/commit", params) do |resp|
           out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -527,7 +527,7 @@ module Coinbase
         end
 
         out = nil
-        post("/v2/orders") do |resp|
+        post("/v2/orders", params) do |resp|
           out = Order.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -540,7 +540,7 @@ module Coinbase
         end
 
         out = nil
-        post("/v2/orders/#{order_id}/refund") do |resp|
+        post("/v2/orders/#{order_id}/refund", params) do |resp|
           out = Order.new(self, resp.data)
           yield(out, resp) if block_given?
         end
