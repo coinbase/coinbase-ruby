@@ -545,6 +545,12 @@ client.payment_method(payment_method_id)
 client.merchant(merchant_id)
 ```
 
+#### Verify a merchant callback
+
+```ruby
+client.verify_callback(request.raw_post, request.headers['X-Signature']) # true/false
+```
+
 ###[Orders](https://developers.coinbase.com/api/v2#orders)
 
 #### List orders

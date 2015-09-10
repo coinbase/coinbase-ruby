@@ -667,6 +667,29 @@ module Coinbase
         end
       end
 
+      CALLBACK_DIGEST = OpenSSL::Digest.new("SHA256")
+      def self.verify_callback(body, signature)
+        return false unless callback_signing_public_key
+        callback_signing_public_key.verify(CALLBACK_DIGEST, signature.unpack("m0")[0], body)
+      rescue OpenSSL::PKey::RSAError, ArgumentError
+        false
+      end
+
+      def self.callback_signing_public_key
+        @@callback_signing_public_key ||= nil
+        return @@callback_signing_public_key if @@callback_signing_public_key
+        path = File.expand_path(File.join(File.dirname(__FILE__), 'coinbase-callback.pub'))
+        @@callback_signing_public_key = OpenSSL::PKey::RSA.new(File.read(path))
+      end
+
+      def callback_signing_public_key
+        Coinbase::Wallet::APIClient.callback_signing_public_key
+      end
+
+      def verify_callback(body, signature)
+        Coinbase::Wallet::APIClient.verify_callback(body, signature)
+      end
+
       def self.whitelisted_certificates
         path = File.expand_path(File.join(File.dirname(__FILE__), 'ca-coinbase.crt'))
 
