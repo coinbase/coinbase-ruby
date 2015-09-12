@@ -37,7 +37,7 @@ module Coinbase
       end
 
       def create_address(params = {})
-        @client.create_address(self['id']) do |data, resp|
+        @client.create_address(self['id'], params) do |data, resp|
           yield(data, resp) if block_given?
         end
       end
