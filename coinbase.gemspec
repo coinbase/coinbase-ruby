@@ -7,7 +7,7 @@ Gem::Specification.new do |gem|
   gem.name          = "coinbase"
   gem.version       = Coinbase::Wallet::VERSION
   gem.authors       = ["John Duhamel", "Jori Lallo"]
-  gem.email         = ["jjd@coinbase.com"]
+  gem.email         = ["api@coinbase.com"]
   gem.description   = "Client library for Coinbase Wallet API v2"
   gem.summary       = "Client library for Coinbase Wallet API v2"
   gem.homepage      = "https://developers.coinbase.com/api/v2"
