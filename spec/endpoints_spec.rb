@@ -16,8 +16,8 @@ describe Coinbase::Wallet do
 
   it "gets exchange rates" do
     stub_request(:get, "https://api.coinbase.com/v2/exchange-rates")
-      .to_return(body: { data: mock_collection }.to_json)
-    expect(@client.exchange_rates).to eq mock_collection
+      .to_return(body: { data: mock_item }.to_json)
+    expect(@client.exchange_rates).to eq mock_item
   end
 
   it "gets buy price" do

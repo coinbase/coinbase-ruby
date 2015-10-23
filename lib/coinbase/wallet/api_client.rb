@@ -20,7 +20,7 @@ module Coinbase
       def exchange_rates(params = {})
         out = nil
         get("/v2/exchange-rates", params) do |resp|
-          out = resp.data.map { |item| APIObject.new(self, item) }
+          out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
         out
