@@ -177,6 +177,28 @@ module Coinbase
       end
 
       #
+      # Notifications
+      #
+      def notifications(params = {})
+        out = nil
+        get("/v2/notifications", params) do |resp|
+          out = resp.data.map { |item| APIObject.new(self, item) }
+          yield(out, resp) if block_given?
+        end
+        out
+      end
+
+      def notification(notification_id, params = {})
+        out = nil
+        get("/v2/notifications/#{notification_id}", params) do |resp|
+          out = APIObject.new(self, resp.data)
+          yield(out, resp) if block_given?
+        end
+        out
+      end
+
+
+      #
       # Addresses
       #
       def addresses(account_id, params = {})
