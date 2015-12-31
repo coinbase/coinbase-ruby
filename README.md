@@ -234,7 +234,7 @@ client.currencies
 **List exchange rates**
 
 ```ruby
-client.exchange_rate
+client.exchange_rates
 ```
 
 **Buy price**
