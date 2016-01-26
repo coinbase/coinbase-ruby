@@ -548,7 +548,7 @@ client.merchant(merchant_id)
 #### Verify a merchant callback
 
 ```ruby
-client.verify_callback(request.raw_post, request.headers['X-Signature']) # true/false
+client.verify_callback(request.raw_post, request.headers['CB-SIGNATURE']) # true/false
 ```
 
 ###[Orders](https://developers.coinbase.com/api/v2#orders)
