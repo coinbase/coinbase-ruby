@@ -547,6 +547,8 @@ client.merchant(merchant_id)
 
 #### Verify a merchant callback
 
+Note: Only production callbacks can be verified. Callbacks issued by the sandbox will always return false below.
+
 ```ruby
 client.verify_callback(request.raw_post, request.headers['CB-SIGNATURE']) # true/false
 ```
