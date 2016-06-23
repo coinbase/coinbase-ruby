@@ -20,6 +20,7 @@ require "coinbase/wallet/models/transfer"
 require "coinbase/wallet/models/order"
 require "coinbase/wallet/models/checkout"
 require "coinbase/wallet/client"
+require "coinbase/util"
 
 module Coinbase
   module Wallet

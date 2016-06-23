@@ -21,19 +21,19 @@ describe Coinbase::Wallet do
   end
 
   it "gets buy price" do
-    stub_request(:get, "https://api.coinbase.com/v2/prices/buy")
+    stub_request(:get, "https://api.coinbase.com/v2/prices/BTC-USD/buy")
       .to_return(body: { data: mock_item }.to_json)
     expect(@client.buy_price).to eq mock_item
   end
 
   it "gets sell price" do
-    stub_request(:get, "https://api.coinbase.com/v2/prices/sell")
+    stub_request(:get, "https://api.coinbase.com/v2/prices/BTC-USD/sell")
       .to_return(body: { data: mock_item }.to_json)
     expect(@client.sell_price).to eq mock_item
   end
 
   it "gets spot price" do
-    stub_request(:get, "https://api.coinbase.com/v2/prices/spot")
+    stub_request(:get, "https://api.coinbase.com/v2/prices/BTC-USD/spot")
       .to_return(body: { data: mock_item }.to_json)
     expect(@client.spot_price).to eq mock_item
   end
