@@ -752,8 +752,7 @@ module Coinbase
       private
 
       def determine_currency_pair(params)
-        currency = params[:currency]
-        Coinbase::Util.determine_currency_pair(currency)
+        Coinbase::Util.determine_currency_pair(params)
       end
     end
   end
