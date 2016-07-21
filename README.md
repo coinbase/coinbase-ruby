@@ -241,18 +241,24 @@ client.exchange_rates
 
 ```ruby
 client.buy_price
+# or
+client.buy_price(currency: 'BTC-USD')
 ```
 
 **Sell price**
 
 ```ruby
 client.sell_price
+# or
+client.sell_price(currency: 'ETH-BTC')
 ```
 
 **Spot price**
 
 ```ruby
 client.spot_price
+# or
+client.spot_price(currency: 'BTC-EUR')
 ```
 
 **Current server time**

@@ -28,7 +28,9 @@ module Coinbase
 
       def buy_price(params = {})
         out = nil
-        get("/v2/prices/buy", params) do |resp|
+        pair = determine_currency_pair(params)
+
+        get("/v2/prices/#{pair}/buy", params) do |resp|
           out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -37,7 +39,9 @@ module Coinbase
 
       def sell_price(params = {})
         out = nil
-        get("/v2/prices/sell", params) do |resp|
+        pair = determine_currency_pair(params)
+
+        get("/v2/prices/#{pair}/sell", params) do |resp|
           out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -46,7 +50,9 @@ module Coinbase
 
       def spot_price(params = {})
         out = nil
-        get("/v2/prices/spot", params) do |resp|
+        pair = determine_currency_pair(params)
+
+        get("/v2/prices/#{pair}/spot", params) do |resp|
           out = APIObject.new(self, resp.data)
           yield(out, resp) if block_given?
         end
@@ -741,6 +747,12 @@ module Coinbase
         end
 
         result
+      end
+
+      private
+
+      def determine_currency_pair(params)
+        Coinbase::Util.determine_currency_pair(params)
       end
     end
   end
