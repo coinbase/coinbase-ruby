@@ -10,7 +10,7 @@ module Coinbase
   class Client
     include HTTParty
 
-    BASE_URI = 'https://coinbase.com/api/v1'
+    BASE_URI = 'https://api.coinbase.com/v1'
 
     def initialize(api_key='', api_secret='', options={})
       @api_key = api_key
@@ -141,6 +141,10 @@ module Coinbase
 
     # Users
 
+    def current_user
+      get '/users/self'
+    end
+
     def create_user email, password=nil, client_id=nil, scopes=nil
       password ||= SecureRandom.urlsafe_base64(12)
       options = {user: {email: email, password: password}}
@@ -175,8 +179,8 @@ module Coinbase
 
     # Buys
 
-    def buy! qty
-      r = post '/buys', {qty: qty}
+    def buy! qty, options = {}
+      r = post '/buys', options.merge({qty: qty})
       r = convert_money_objects(r)
       r.transfer.payout_date = Time.parse(r.transfer.payout_date) rescue nil
       r
@@ -264,23 +268,41 @@ module Coinbase
 
       signature = OpenSSL::HMAC.hexdigest(OpenSSL::Digest.new('sha256'), @api_secret, hmac_message)
 
-      headers = {
+      headers = build_headers({
         'ACCESS_KEY' => @api_key,
         'ACCESS_SIGNATURE' => signature,
         'ACCESS_NONCE' => nonce.to_s,
         "Content-Type" => "application/json",
-      }
+      }, options)
 
       request_options[:headers] = headers
 
       r = self.class.send(verb, path, request_options.merge(ssl_options))
-      hash = Hashie::Mash.new(JSON.parse(r.body))
+      handle_response(r)
+    end
+
+    class Error < StandardError; end
+    class TwoFactorAuthError < StandardError; end
+
+    protected
+
+    def build_headers headers, options
+      if options[:token_2fa] && options[:token_2fa].to_i > 0
+        headers['CB-2FA-Token'] = options[:token_2fa]
+        options.delete(:token_2fa)
+      end
+      headers
+    end
+
+    def handle_response res
+      status = res.respond_to?(:code) ? res.code : res.status
+      hash = Hashie::Mash.new(JSON.parse(res.body))
+      # Handle 2FA generically
+      raise TwoFactorAuthError.new(hash.error) if status === 402
       raise Error.new(hash.error) if hash.error
       raise Error.new(hash.errors.join(", ")) if hash.errors
       hash
     end
-
-    class Error < StandardError; end
 
     private
 
