@@ -1,7 +1,7 @@
 class Money
   module Bank
     class Coinbase < VariableExchange
-      
+
       def initialize(coinbase=nil)
         @coinbase = coinbase || ::Coinbase::Client.new
         super()
@@ -25,15 +25,11 @@ class Money
       ##
       # Fetch fresh rates from Coinbase
       def fetch_rates!(opts={})
-        fn = lambda do
-          @rates = @coinbase.exchange_rates
-          refresh_rates_expiration!
-        end
-
-        if opts[:without_mutex]
-          fn.call
-        else
-          @mutex.synchronize { fn.call }
+        store.transaction do
+          @coinbase.exchange_rates.each do |k, v|
+            matches = /(.*)_to_(.*)/.match(k)
+            store.add_rate(matches[1], matches[2], v)
+          end
         end
       end
 
@@ -51,7 +47,7 @@ class Money
 
       def get_rate(from, to, opts = {})
         expire_rates
-        super
+        store.get_rate(from, to)
       end
 
     private
@@ -62,23 +58,9 @@ class Money
       # @return [Time] The next expiration.
       def refresh_rates_expiration!
         if @ttl_in_seconds
-          @rates_expiration = Time.now + @ttl_in_seconds 
+          @rates_expiration = Time.now + @ttl_in_seconds
         end
       end
-
-      # Return the rate hashkey for the given currencies.
-      #
-      # @param [Currency, String, Symbol] from The currency to exchange from.
-      # @param [Currency, String, Symbol] to The currency to exchange to.
-      #
-      # @return [String]
-      #
-      # @example
-      #   rate_key_for("USD", "CAD") #=> "usd_to_cad"
-      def rate_key_for(from, to)
-        "#{::Money::Currency.wrap(from).iso_code}_to_#{::Money::Currency.wrap(to).iso_code}".downcase
-      end
-
     end
   end
 end

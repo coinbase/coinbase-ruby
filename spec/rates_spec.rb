@@ -42,7 +42,7 @@ describe Money::Bank::Coinbase do
   end
 
   it "automatically refreshes expired rates" do
-    '1'.to_money(:BTC).exchange_to(:RON).should == '2111.22'.to_money(:RON)
+    '1'.to_money(:BTC).exchange_to(:RON).should == '2111.23'.to_money(:RON)
     @rates_response['btc_to_ron'] = '2000'
     fake :get, '/currencies/exchange_rates', @rates_response
     @bank.ttl_in_seconds = 0.2
