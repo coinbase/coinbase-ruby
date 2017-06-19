@@ -59,6 +59,12 @@ describe Coinbase::Wallet::Account do
     expect(@object.address("test")).to eq mock_item
   end
 
+  it "gets address transactions" do
+    stub_request(:get, /#{@object.resource_path}\/addresses\/test\/transactions/)
+      .to_return(body: { data: mock_collection }.to_json)
+    expect(@object.address_transactions("test")).to eq mock_collection
+  end
+
   it "creates address" do
     stub_request(:post, /#{@object.resource_path}\/addresses/)
       .to_return(body: { data: mock_item }.to_json)
