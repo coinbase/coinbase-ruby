@@ -215,7 +215,7 @@ If the request is not successful, the gem will raise an error. We try to raise a
 
 This is not intended to provide complete documentation of the API. For more detail, please refer to the [official documentation](https://developers.coinbase.com/api/v2).
 
-###[Market Data](https://developers.coinbase.com/api/v2#data-api)
+### [Market Data](https://developers.coinbase.com/api/v2#data-api)
 
 **List supported native currencies**
 
@@ -259,7 +259,7 @@ client.spot_price(currency: 'BTC-EUR')
 client.time
 ```
 
-###[Users](https://developers.coinbase.com/api/v2#users)
+### [Users](https://developers.coinbase.com/api/v2#users)
 
 **Get authorization info**
 
@@ -285,7 +285,7 @@ client.current_user
 client.update_current_user(name: "New Name")
 ```
 
-###[Accounts](https://developers.coinbase.com/api/v2#accounts)
+### [Accounts](https://developers.coinbase.com/api/v2#accounts)
 
 **List all accounts**
 
@@ -329,7 +329,7 @@ account.update!(name: "New Account Name")
 account.delete!
 ```
 
-###[Addresses](https://developers.coinbase.com/api/v2#addresses)
+### [Addresses](https://developers.coinbase.com/api/v2#addresses)
 
 **List receive addresses for account**
 
@@ -355,7 +355,7 @@ account.address_transactions(address_id)
 account.create_address
 ```
 
-###[Transactions](https://developers.coinbase.com/api/v2#transactions)
+### [Transactions](https://developers.coinbase.com/api/v2#transactions)
 
 **List transactions**
 
@@ -405,7 +405,7 @@ account.cancel_request(request_id)
 account.complete_request(request_id)
 ```
 
-###[Buys](https://developers.coinbase.com/api/v2#buys)
+### [Buys](https://developers.coinbase.com/api/v2#buys)
 
 **List buys**
 
@@ -434,7 +434,7 @@ buy = account.buy(amount: "1", currency: "BTC", commit: false)
 account.commit_buy(buy.id)
 ```
 
-###[Sells](https://developers.coinbase.com/api/v2#sells)
+### [Sells](https://developers.coinbase.com/api/v2#sells)
 
 **List sells**
 
@@ -463,7 +463,7 @@ sell = account.sell(amount: "1", currency: "BTC", commit: false)
 account.commit_sell(sell.id)
 ```
 
-###[Deposit](https://developers.coinbase.com/api/v2#deposits)
+### [Deposit](https://developers.coinbase.com/api/v2#deposits)
 
 **List deposits**
 
@@ -492,7 +492,7 @@ deposit = account.deposit(amount: "1", currency: "BTC", commit: false)
 account.commit_deposit(deposit.id)
 ```
 
-###[Withdrawals](https://developers.coinbase.com/api/v2#withdrawals)
+### [Withdrawals](https://developers.coinbase.com/api/v2#withdrawals)
 
 **List withdrawals**
 
@@ -521,7 +521,7 @@ withdraw = account.withdraw(amount: "1", currency: "BTC", commit: false)
 account.commit_withdrawal(withdrawal.id)
 ```
 
-###[Payment Methods](https://developers.coinbase.com/api/v2#payment-methods)
+### [Payment Methods](https://developers.coinbase.com/api/v2#payment-methods)
 
 **List payment methods**
 
@@ -535,7 +535,7 @@ client.payment_methods
 client.payment_method(payment_method_id)
 ```
 
-###[Merchants](https://developers.coinbase.com/api/v2#merchants)
+### [Merchants](https://developers.coinbase.com/api/v2#merchants)
 
 #### Get merchant
 
@@ -549,7 +549,7 @@ client.merchant(merchant_id)
 client.verify_callback(request.raw_post, request.headers['CB-SIGNATURE']) # true/false
 ```
 
-###[Orders](https://developers.coinbase.com/api/v2#orders)
+### [Orders](https://developers.coinbase.com/api/v2#orders)
 
 #### List orders
 
