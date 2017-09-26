@@ -8,15 +8,21 @@ _Important:_ As this library is targeted for newer API v2, it requires v2 permis
 
 Add this line to your application's Gemfile:
 
-    gem 'coinbase'
+```ruby
+gem 'coinbase'
+```
 
 Then execute:
 
-    bundle install
+```sh
+bundle install
+```
 
 Or install it yourself as:
 
-    gem install coinbase
+```sh
+gem install coinbase
+```
 
 ## Authentication
 
