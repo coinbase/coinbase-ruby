@@ -158,10 +158,10 @@ p "Balance:\t #{account.balance.amount} #{account.balance.currency}"
 
 All values are returned directly from the API unmodified, except the following exceptions:
 
-- [Money amounts](https://developers.coinbase.com/api/v2#money-hash) are always converted into [BigDecimal](http://ruby-doc.org/stdlib-2.1.1/libdoc/bigdecimal/rdoc/BigDecimal.html) objects. You should always use BigDecimal when handing bitcoin amounts for accurate presicion
-- [Timestamps](https://developers.coinbase.com/api/v2#timestamps) are always converted into [Time](http://ruby-doc.org/stdlib-2.1.1/libdoc/time/rdoc/Time.html) objects
+- [Money amounts](https://developers.coinbase.com/api/v2#money-hash) are always converted into [BigDecimal](http://ruby-doc.org/stdlib-2.1.1/libdoc/bigdecimal/rdoc/BigDecimal.html) objects. You should always use BigDecimal when handing bitcoin amounts for accurate precision.
+- [Timestamps](https://developers.coinbase.com/api/v2#timestamps) are always converted into [Time](http://ruby-doc.org/stdlib-2.1.1/libdoc/time/rdoc/Time.html) objects.
 
-Most methods require an associated account. Thus, responses for the [account endpoints](https://developers.coinbase.com/api/v2#accounts) contain methods for accessing all the relevant endpoints. This is convient, as it doesn't require you to supply the same account id over and over again.
+Most methods require an associated account. Thus, responses for the [account endpoints](https://developers.coinbase.com/api/v2#accounts) contain methods for accessing all the relevant endpoints. This is convenient, as it doesn't require you to supply the same account id over and over again.
 
 ```ruby
 account = client.primary_account
