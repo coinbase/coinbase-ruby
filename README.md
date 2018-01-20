@@ -1,5 +1,8 @@
 # Coinbase Wallet Gem
 
+[![Gem Version](https://badge.fury.io/rb/coinbase.svg)](https://badge.fury.io/rb/coinbase)
+[![Build Status](https://travis-ci.org/coinbase/coinbase-ruby.svg?branch=master)](https://travis-ci.org/coinbase/coinbase-ruby)
+
 This is the official client library for the [Coinbase Wallet API v2](https://developers.coinbase.com/api/v2). We provide an intuitive, stable interface to integrate Coinbase Wallet into your Ruby project.
 
 _Important:_ As this library is targeted for newer API v2, it requires v2 permissions (i.e. `wallet:accounts:read`). If you're still using v1, please use [older version](https://github.com/coinbase/coinbase-ruby/releases/tag/v2.1.1) of this library.
