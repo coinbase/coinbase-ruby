@@ -355,8 +355,8 @@ module Coinbase
       end
 
       def buy(account_id, params = {})
-        [ :amount ].each do |param|
-          raise APIError, "Missing parameter: #{param}" unless params.include? param
+        if !(params.include? :amount || params.include? :total)
+          raise APIError, "Missing parameter: #{:amount} or #{:total}"
         end
 
         out = nil
