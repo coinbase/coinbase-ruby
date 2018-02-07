@@ -355,7 +355,7 @@ module Coinbase
       end
 
       def buy(account_id, params = {})
-        raise APIError, "Missing parameter: 'amount' or 'total'" unless params.include? 'amount' or params.include? 'total'
+        raise APIError, "Missing parameter: 'amount' or 'total'" unless params.include? :amount or params.include? :total
 
         out = nil
         post("/v2/accounts/#{account_id}/buys", params) do |resp|
