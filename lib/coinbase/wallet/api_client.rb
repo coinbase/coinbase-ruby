@@ -396,9 +396,7 @@ module Coinbase
       end
 
       def sell(account_id, params = {})
-        [ :amount ].each do |param|
-          raise APIError, "Missing parameter: #{param}" unless params.include? param
-        end
+        raise APIError, "Missing parameter: 'amount' or 'total'" unless params.include? :amount or params.include? :total
 
         out = nil
         post("/v2/accounts/#{account_id}/sells", params) do |resp|
