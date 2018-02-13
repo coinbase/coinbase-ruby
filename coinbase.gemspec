@@ -6,6 +6,7 @@ require 'coinbase/wallet/version'
 Gem::Specification.new do |gem|
   gem.name          = "coinbase"
   gem.version       = Coinbase::Wallet::VERSION
+  gem.license       = 'Apache-2.0'
   gem.authors       = ["John Duhamel", "Jori Lallo"]
   gem.email         = ["api@coinbase.com"]
   gem.description   = "Client library for Coinbase Wallet API v2"
