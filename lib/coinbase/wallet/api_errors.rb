@@ -1,120 +1,81 @@
+# frozen_string_literal: true
+
 module Coinbase
   module Wallet
-    def self.format_error(resp)
-      error = resp.body && (resp.body['errors'] || resp.body['warnings']).first
-      return resp.body unless error
-      message = error['message']
-      message += " (#{error['url']})" if error["url"]
-      message
-    end
 
-    def self.check_response_status(resp)
-      (resp.body['warnings'] || []).each do |warning|
-        message = "WARNING: #{warning['message']}"
-        message += " (#{warning['url']})" if warning["url"]
-        $stderr.puts message
-      end
+    CLIENT_ERRORS = {
+      400 => 'BadRequestError',
+      401 => 'AuthenticationError',
+      402 => 'TwoFactorRequiredError',
+      403 => 'InvalidScopeError',
+      404 => 'NotFoundError',
+      422 => 'ValidationError',
+      429 => 'RateLimitError',
+      500 => 'InternalServerError',
+      503 => 'ServiceUnavailableError',
+      'param_required' => 'ParamRequiredError',
+      'invalid_request' => 'InvalidRequestError',
+      'personal_details_required' => 'PersonalDetailsRequiredError',
+      'authentication_error' => 'AuthenticationError',
+      'unverified_email' => 'UnverifiedEmailError',
+      'invalid_token' => 'InvalidTokenError',
+      'revoked_token' => 'RevokedTokenError',
+      'expired_token' => 'ExpiredTokenError'
+    }
 
-      # OAuth2 errors
-      if resp.status >= 400 && resp.body['error']
-        raise APIError, resp.body['error_description']
-      end
-
-      # Regular errors
-      if resp.body['errors']
-        case resp.status
-        when 400
-          case resp.body['errors'].first['id']
-          when 'param_required' then raise ParamRequiredError, format_error(resp)
-          when 'invalid_request' then raise InvalidRequestError, format_error(resp)
-          when 'personal_details_required' then raise PersonalDetailsRequiredError, format_error(resp)
-          end
-          raise BadRequestError, format_error(resp)
-        when 401
-          case resp.body['errors'].first['id']
-          when 'authentication_error' then raise AuthenticationError, format_error(resp)
-          when 'unverified_email' then raise UnverifiedEmailError, format_error(resp)
-          when 'invalid_token' then raise InvalidTokenError, format_error(resp)
-          when 'revoked_token' then raise RevokedTokenError, format_error(resp)
-          when 'expired_token' then raise ExpiredTokenError, format_error(resp)
-          end
-          raise AuthenticationError, format_error(resp)
-        when 402 then raise TwoFactorRequiredError, format_error(resp)
-        when 403 then raise InvalidScopeError, format_error(resp)
-        when 404 then raise NotFoundError, format_error(resp)
-        when 422 then raise ValidationError, format_error(resp)
-        when 429 then raise RateLimitError, format_error(resp)
-        when 500 then raise InternalServerError, format_error(resp)
-        when 503 then raise ServiceUnavailableError, format_error(resp)
-        end
-      end
-
-      if resp.status > 400
-        raise APIError, "[#{resp.status}] #{resp.body}"
-      end
-    end
+    SERVER_ERRORS = {
+      500 => 'InternalServerError',
+      503 => 'ServiceUnavailableError'
+    }
 
     #
     # Rest API Errors
     #
-    class APIError < RuntimeError
-    end
+    class APIError < RuntimeError; end
+
+    class ClientError < APIError; end
+
+    class ServerError < APIError; end
 
     # Status 400
-    class BadRequestError < APIError
-    end
+    class BadRequestError < ClientError; end
 
-    class ParamRequiredError < APIError
-    end
+    class ParamRequiredError < ClientError; end
 
-    class InvalidRequestError < APIError
-    end
+    class InvalidRequestError < ClientError; end
 
-    class PersonalDetailsRequiredError < APIError
-    end
+    class PersonalDetailsRequiredError < ClientError; end
 
     # Status 401
-    class AuthenticationError < APIError
-    end
+    class AuthenticationError < ClientError; end
 
-    class UnverifiedEmailError < APIError
-    end
+    class UnverifiedEmailError < ClientError; end
 
-    class InvalidTokenError < APIError
-    end
+    class InvalidTokenError < ClientError; end
 
-    class RevokedTokenError < APIError
-    end
+    class RevokedTokenError < ClientError; end
 
-    class ExpiredTokenError < APIError
-    end
+    class ExpiredTokenError < ClientError; end
 
     # Status 402
-    class TwoFactorRequiredError < APIError
-    end
+    class TwoFactorRequiredError < ClientError; end
 
     # Status 403
-    class InvalidScopeError < APIError
-    end
+    class InvalidScopeError < ClientError; end
 
     # Status 404
-    class NotFoundError < APIError
-    end
+    class NotFoundError < ClientError; end
 
     # Status 422
-    class ValidationError < APIError
-    end
+    class ValidationError < ClientError; end
 
     # Status 429
-    class RateLimitError < APIError
-    end
+    class RateLimitError < ClientError; end
 
     # Status 500
-    class InternalServerError < APIError
-    end
+    class InternalServerError < ServerError; end
 
     # Status 503
-    class ServiceUnavailableError < APIError
-    end
+    class ServiceUnavailableError < ServerError; end
   end
 end
