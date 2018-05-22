@@ -39,7 +39,7 @@ module Coinbase
           end
           req.callback do |resp|
             out = EMHTTPResponse.new(resp)
-            Coinbase::Wallet::check_response_status(out)
+            Coinbase::Wallet::StatusMiddleware.check_response_status(out)
             yield(out)
           end
           req.errback do |resp|
