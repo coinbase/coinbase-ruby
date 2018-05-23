@@ -9,7 +9,7 @@ describe Coinbase::Wallet::StatusHandler do
   describe '.call' do
     before do
       stub_request(:get, /.*/)
-        .to_return(body: { errors: [{ id: '404',  message: 'Not Found' }] }.to_json, status: 404)
+        .to_return(body: { errors: [{ id: '404', message: 'Not Found' }] }.to_json, status: 404)
     end
 
     it 'handles response errors' do
@@ -26,7 +26,7 @@ describe Coinbase::Wallet::StatusHandler do
   describe '.check_response_status' do
     before do
       stub_request(:get, /.*/)
-        .to_return(body: { errors: [{ id: '404',  message: 'Not Found' }] }.to_json, status: 404)
+        .to_return(body: { errors: [{ id: '404', message: 'Not Found' }] }.to_json, status: 404)
     end
 
     it 'handles response errors' do

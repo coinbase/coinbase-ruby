@@ -5,7 +5,6 @@ require "bigdecimal"
 require "json"
 require "uri"
 require "net/https"
-require "logger"
 
 require "coinbase/wallet/api_errors"
 require "coinbase/wallet/api_logger"
