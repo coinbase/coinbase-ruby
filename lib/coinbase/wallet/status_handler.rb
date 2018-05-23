@@ -13,12 +13,13 @@ module Coinbase
         self.new(response: response).call
       end
 
-      def initialize(response:)
+      def initialize(response:, logger: Wallet::APILogger)
         self.response = response
+        self.logger = logger
       end
 
       def call
-        log_warning_messages
+        logger.warn(response)
         handle_oauth_errors
         handle_client_and_server_errors
         handle_regular_errors
@@ -26,7 +27,7 @@ module Coinbase
 
       private
 
-      attr_accessor :response
+      attr_accessor :response, :logger
 
       def response_status
         @__response_status ||= response.status
@@ -60,14 +61,6 @@ module Coinbase
       def handle_regular_errors
         if response_status > 400
           raise Wallet::APIError.new("[#{response_status}] #{response_body}")
-        end
-      end
-
-      def log_warning_messages
-        (response_body['warnings'] || []).each do |warning|
-          message = "WARNING: #{warning['message']}"
-          message += " (#{warning['url']})" if warning["url"]
-          $stderr.puts message
         end
       end
 
