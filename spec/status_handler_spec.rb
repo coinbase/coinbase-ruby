@@ -16,7 +16,7 @@ describe Coinbase::Wallet::StatusHandler do
       # Arrange
       request = Net::HTTP::Get.new('/v2/prices/historic')
       response = Coinbase::Wallet::NetHTTPResponse.new(@conn.request(request))
-      status_handler = Coinbase::Wallet::StatusHandler.new(response: response)
+      status_handler = described_class.new(response: response)
 
       # Act & Assert
       expect { status_handler.call }.to raise_error(Coinbase::Wallet::NotFoundError)
@@ -36,7 +36,7 @@ describe Coinbase::Wallet::StatusHandler do
 
       # Act & Assert
       expect {
-        Coinbase::Wallet::StatusHandler.check_response_status(response)
+        described_class.check_response_status(response)
       }.to raise_error(Coinbase::Wallet::NotFoundError)
     end
   end
@@ -54,11 +54,11 @@ describe Coinbase::Wallet::StatusHandler do
       # Arrange
       request = Net::HTTP::Get.new('/prices/historic')
       response = Coinbase::Wallet::NetHTTPResponse.new(@conn.request(request))
-      status_handler = Coinbase::Wallet::StatusHandler.new(response: response)
 
       # Act & Assert
-      expect { status_handler.call }.to raise_error(Coinbase::Wallet::APIError)
-                                    .and output(/Please supply API version/).to_stderr
+      expect {
+        described_class.check_response_status(response)
+      }.to raise_error(Coinbase::Wallet::APIError).and output(/Please supply API version/).to_stderr
     end
   end
 end
