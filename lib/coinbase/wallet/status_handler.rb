@@ -2,9 +2,9 @@
 
 module Coinbase
   module Wallet
-    class StatusMiddleware
+    class StatusHandler
       #
-      # Coinbase::Wallet::StatusMiddleware
+      # Coinbase::Wallet::StatusHandler
       #
       # The service is responsible for handling api errors based
       # on the response status as well as logging warning messages

@@ -33,7 +33,7 @@ module Coinbase
 
         resp = @conn.request(req)
         out = NetHTTPResponse.new(resp)
-        Coinbase::Wallet::StatusMiddleware.check_response_status(out)
+        Coinbase::Wallet::StatusHandler.check_response_status(out)
         yield(out)
         out.data
       end

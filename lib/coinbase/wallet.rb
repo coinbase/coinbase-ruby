@@ -19,7 +19,7 @@ require "coinbase/wallet/models/transaction"
 require "coinbase/wallet/models/transfer"
 require "coinbase/wallet/models/order"
 require "coinbase/wallet/models/checkout"
-require "coinbase/wallet/status_middleware"
+require "coinbase/wallet/status_handler"
 require "coinbase/wallet/client"
 require "coinbase/util"
 
