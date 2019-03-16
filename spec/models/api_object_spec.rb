@@ -45,6 +45,13 @@ describe Coinbase::Wallet::APIObject do
     expect(@object.created_at.class).to eq Time
   end
 
+  describe '#format' do
+    it 'should convert negative amounts to BigDecimal' do
+      ret = @object.format('amount', '-0.1234')
+      expect(ret).to eq BigDecimal('-0.1234')
+    end
+  end
+
   describe '#update' do
     it 'should update object' do
       @object.update({'id' => '1234'})

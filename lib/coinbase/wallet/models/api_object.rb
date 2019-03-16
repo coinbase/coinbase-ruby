@@ -28,7 +28,7 @@ module Coinbase
         elsif key =~ /_at$/ && (Time.iso8601(val) rescue nil)
           Time.parse(val)
         elsif key == "amount" && val =~ /^.{0,1}\s*[0-9,]*\.{0,1}[0-9]*$/
-          BigDecimal(val.gsub(/[^0-9\.]/, ''))
+          BigDecimal(val.gsub(/[^0-9\.-]/, ''))
         else
           val
         end
