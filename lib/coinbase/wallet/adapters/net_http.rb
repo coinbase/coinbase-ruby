@@ -7,11 +7,15 @@ module Coinbase
         @conn.use_ssl = true if base_uri.scheme == 'https'
         @conn.cert_store = self.class.whitelisted_certificates
         @conn.ssl_version = :TLSv1_2
+        @api_path = base_uri.path
       end
 
       private
 
       def http_verb(method, path, body = nil, headers = {})
+        if (path.include? "v2")
+          path = @api_path + path
+        end
         case method
         when 'GET' then req = Net::HTTP::Get.new(path)
         when 'PUT' then req = Net::HTTP::Put.new(path)
